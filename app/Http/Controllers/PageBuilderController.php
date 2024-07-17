@@ -6,6 +6,8 @@ use App\Models\FormBuilder;
 use App\Models\Menu;
 use App\Models\PageBuilder;
 use App\Traits\DatabaseTrait;
+use App\Traits\FileBackupTrait;
+use App\Traits\FileUploadTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +20,7 @@ use App\Services\PermissionService;
 class PageBuilderController extends Controller
 {
     use DatabaseTrait;
+    use FileBackupTrait;
 
     protected $permissionService;
 
@@ -228,6 +231,10 @@ class PageBuilderController extends Controller
             $modelDirectory = app_path("Models/{$studly_case}");
             $modelPath = "{$modelDirectory}/{$studly_case}.php";
             $table_name = Str::snake($page_name);
+
+            // Backup existing files
+            $this->backupExistingFiles($studly_case);
+
             //=================Create Table================
             $get_form_data = FormBuilder::where('page_id', $page_id)->orderBy('sorting_order', 'asc')->get();
             // Initialize an array to hold the formatted data
