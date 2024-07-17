@@ -879,7 +879,8 @@ class PageBuilderController extends Controller
 
         if (!empty($relatedTables)) {
             foreach (explode(',', $relatedTables) as $table) {
-                $controllerContent .= "        \${$table}_list = DB::table('{$table}')->get();\n";
+                $table_new = Str::lower($table);
+                $controllerContent .= "        \${$table}_list = DB::table('{$table_new}')->get();\n";
                 $compactVariables .= ", '{$table}_list'";
             }
         }
