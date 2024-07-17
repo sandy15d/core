@@ -10,7 +10,7 @@
         </div>
         @if($cancel_route)
             <div>
-                <a href="{{ $cancel_route }}" class="button cancel-button">{{trans('admin/form.cancel_button')}}</a>
+                <a href="{{ $cancel_route }}" class="button cancel-button">Cancel</a>
             </div>
         @endif
     </div>
