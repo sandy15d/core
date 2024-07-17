@@ -59,6 +59,11 @@
             flex-direction: column;
             padding: .5rem;
         }
+
+        .text-bg-dark {
+            color: #fff !important;
+            background-color: rgb(165 133 163) !important;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
           integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
@@ -165,7 +170,8 @@
                                             aria-controls="offcanvasRight" data-form_id="{{ $input->id }}"
                                             onclick="getFormDetails({{ $input->id }});">@includeIf('layouts.icons.edit_icon')
                                     </button>
-                                    <button class="delete-btn" type="button"data-form_id="{{ $input->id }}">@includeIf('layouts.icons.delete_icon')</button>
+                                    <button class="delete-btn" type="button"
+                                            data-form_id="{{ $input->id }}">@includeIf('layouts.icons.delete_icon')</button>
                                 </div>
                             </div>
                         </div>
@@ -275,39 +281,39 @@
                     <p>Multi-checkbox</p>
                     <div class="input-group input-group-sm">
                         <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
-                            id="multi_checkboxName" aria-label="Enter Name" aria-describedby="button-addon2">
+                               id="multi_checkboxName" aria-label="Enter Name" aria-describedby="button-addon2">
                         <button class="btn btn-secondary" id="button-addon2" type="button"
-                            onclick="addInput('multi-checkbox','multi_checkboxName')">Add
+                                onclick="addInput('multi-checkbox','multi_checkboxName')">Add
                         </button>
 
                     </div>
                 </div>
             </div>
-             {{--<div class="row mt-1">
-                 <div class="col add-form-element">
-                     <label><i class="fa-regular fa-circle-dot"></i> Radio Group: </label>
-                     <p>Radio Group</p>
-                     <div class="input-group input-group-sm">
-                         <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
-                             aria-label="Enter Name" aria-describedby="button-addon2" id="radioName">
-                         <button class="btn btn-secondary" id="button-addon2" type="button"
-                             onclick="addInput('radio', 'radioName')">Add
-                         </button>
-                     </div>
-                 </div>
-                 <div class="col add-form-element">
-                     <label><i class="fa-regular fa-circle-dot"></i> Custom Radio Group : </label>
-                     <p>Custom Radio </p>
-                     <div class="input-group input-group-sm">
-                         <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
-                             id="customRadio" aria-label="Enter Name" aria-describedby="button-addon2">
-                         <button class="btn btn-secondary" id="button-addon2" type="button"
-                             onclick="addInput('customRadio','customRadio')">Add
-                         </button>
+            {{--<div class="row mt-1">
+                <div class="col add-form-element">
+                    <label><i class="fa-regular fa-circle-dot"></i> Radio Group: </label>
+                    <p>Radio Group</p>
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
+                            aria-label="Enter Name" aria-describedby="button-addon2" id="radioName">
+                        <button class="btn btn-secondary" id="button-addon2" type="button"
+                            onclick="addInput('radio', 'radioName')">Add
+                        </button>
+                    </div>
+                </div>
+                <div class="col add-form-element">
+                    <label><i class="fa-regular fa-circle-dot"></i> Custom Radio Group : </label>
+                    <p>Custom Radio </p>
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
+                            id="customRadio" aria-label="Enter Name" aria-describedby="button-addon2">
+                        <button class="btn btn-secondary" id="button-addon2" type="button"
+                            onclick="addInput('customRadio','customRadio')">Add
+                        </button>
 
-                     </div>
-                 </div>
-             </div>--}}
+                    </div>
+                </div>
+            </div>--}}
             <div class="row mt-1">
                 <div class="col add-form-element">
                     <label><i class="fa-regular fa-image"></i> Image: </label>
@@ -358,30 +364,30 @@
                 </div>
 
             </div>
-           {{-- <div class="row mt-1">
-                <div class="col add-form-element">
-                 <label><i class="fa-solid fa-bars"></i> Custom Select : </label>
-                 <p>Custom simple dropdown</p>
-                 <div class="input-group input-group-sm">
-                     <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
-                         id="customSelectName" aria-label="Enter Name" aria-describedby="button-addon2">
-                     <button class="btn btn-secondary" id="button-addon2" type="button"
-                         onclick="addInput('select','customSelectName')">Add
-                     </button>
-                 </div>
-             </div>
-             <div class="col add-form-element">
-                      <label><i class="fa-solid fa-grip"></i> Multi Select 2 : </label>
-                      <p>Multi Select with search</p>
-                      <div class="input-group input-group-sm">
-                          <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
-                              id="multiSelectName" aria-label="Enter Name" aria-describedby="button-addon2">
-                          <button class="btn btn-secondary" id="button-addon2" type="button"
-                              onclick="addInput('multiselect','multiSelectName')">Add
-                          </button>
-                      </div>
+            {{-- <div class="row mt-1">
+                 <div class="col add-form-element">
+                  <label><i class="fa-solid fa-bars"></i> Custom Select : </label>
+                  <p>Custom simple dropdown</p>
+                  <div class="input-group input-group-sm">
+                      <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
+                          id="customSelectName" aria-label="Enter Name" aria-describedby="button-addon2">
+                      <button class="btn btn-secondary" id="button-addon2" type="button"
+                          onclick="addInput('select','customSelectName')">Add
+                      </button>
                   </div>
-            </div>--}}
+              </div>
+              <div class="col add-form-element">
+                       <label><i class="fa-solid fa-grip"></i> Multi Select 2 : </label>
+                       <p>Multi Select with search</p>
+                       <div class="input-group input-group-sm">
+                           <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
+                               id="multiSelectName" aria-label="Enter Name" aria-describedby="button-addon2">
+                           <button class="btn btn-secondary" id="button-addon2" type="button"
+                               onclick="addInput('multiselect','multiSelectName')">Add
+                           </button>
+                       </div>
+                   </div>
+             </div>--}}
             <div class="row mt-1">
                 <div class="col add-form-element">
                     <label><i class="fa-solid fa-font"></i> Header :</label>
@@ -563,80 +569,6 @@
                 return;
             }
             const label = name;
-            /*           const form = document.getElementById('dynamicForm');
-
-                       // Create the main form group div
-                       const mainDiv = document.createElement('div');
-                       mainDiv.className = 'hover-eff el-box-text row-50';
-
-                       const inputContainer = document.createElement('div');
-                       inputContainer.className = 'input-container';
-
-                       // Create the action div to hold the edit and delete buttons
-                       const actionDiv = document.createElement('div');
-                       actionDiv.className = 'action-div';
-
-                       // Create the label for the input
-                       const inputLabel = document.createElement('label');
-                       const label = name; // Use the entered text as the label
-                       inputLabel.textContent = label;
-                       const snakeCaseName = toSnakeCase(name); // Convert to snake_case
-                       // Create the label for the input
-
-                       inputLabel.setAttribute('for', snakeCaseName);
-                       inputLabel.textContent = label;
-
-                       // Create the input element
-                       let input;
-                       if (type === 'textarea') {
-                           input = document.createElement('textarea');
-                       } else if (type === 'text' || type === 'email' || type === 'number') {
-                           input = document.createElement('input');
-                           input.type = type;
-                       } else if (type === 'select') {
-                           input = document.createElement('select');
-                       }
-
-                       input.name = convert_space_to_underscore(name);
-                       input.placeholder = label;
-                       input.className = 'form-input';
-
-                       // Create the edit button
-                       const editButton = document.createElement('button');
-                       editButton.textContent = 'Edit';
-                       editButton.setAttribute('type', 'button');
-                       editButton.setAttribute('data-bs-toggle', 'offcanvas');
-                       editButton.setAttribute('data-bs-target', '#offcanvasRight');
-                       editButton.setAttribute('aria-controls', 'offcanvasRight');
-
-
-                       // Create the delete button
-                       const deleteButton = document.createElement('button');
-                       deleteButton.textContent = 'Delete';
-                       deleteButton.className = 'delete-btn';
-                       deleteButton.onclick = function () {
-                           mainDiv.remove();
-                       };
-
-                       inputContainer.appendChild(actionDiv);
-
-                       // Append the edit and delete buttons to the action div
-                       actionDiv.appendChild(editButton);
-                       actionDiv.appendChild(deleteButton);
-
-                       // Append the input label and input to the form group
-                       mainDiv.appendChild(inputLabel);
-                       mainDiv.appendChild(input);
-
-                       // Append the action div to the form group
-                       mainDiv.appendChild(inputContainer);
-
-                       // Append the form group to the form
-                       form.appendChild(mainDiv);
-
-                       // Clear the input field
-                       document.getElementById(nameId).value = '';*/
-
             //ajax call to save form element in table
             $.ajax({
                 url: "{{ route('add_form_element') }}",

@@ -25,7 +25,12 @@ function displayNestableMenu($parent_id, $level, $Is_Edit, $Is_Delete = 0)
 
             if ($row['count'] > 0) {
                 $render_html .= '<li class="dd-item dd3-item" data-id="' . $row['id'] . '">
-                      <div class="dd-handle dd3-handle"><i class="ri-drag-move-2-fill"></i></div><div class="dd3-content"><label class="pt-2">' . $menu_name . '</label>';
+                      <div class="dd-handle dd3-handle"><div class="icon">
+    <div class="font-awesome-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8h32v96H128V192c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V288h96v96H192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8H288V288h96v32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6v32H288V128h32c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-64-64z"/></svg>
+    </div>
+</div>
+</div><div class="dd3-content"><label class="pt-2">' . $menu_name . '</label>';
                 if ($Is_Edit) {
                     $render_html .= '<button type="button" class="float-right btn bg-theme-dark btn-labeled btn-labeled-left btn-sm" onclick="get_form(' . $row['id'] . ')"><b><i class="icon-pencil"></i></b>Edit</button>';
                 }
@@ -37,7 +42,12 @@ function displayNestableMenu($parent_id, $level, $Is_Edit, $Is_Delete = 0)
             } elseif ($row['count'] == 0) {
 
                 $render_html .= '<li class="dd-item dd3-item" data-id="' . $row['id'] . '">
-                      <div class="dd-handle dd3-handle"><i class="ri-drag-move-2-fill"></i></div><div class="dd3-content"><label class="pt-2">' . $menu_name . '</label>';
+                      <div class="dd-handle dd3-handle"><div class="icon">
+    <div class="font-awesome-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8h32v96H128V192c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V288h96v96H192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8H288V288h96v32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6v32H288V128h32c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-64-64z"/></svg>
+    </div>
+</div>
+</div><div class="dd3-content"><label class="pt-2">' . $menu_name . '</label>';
 
                 if ($Is_Edit) {
                     $render_html .= '<button type="button" class="float-right btn bg-theme-dark btn-labeled btn-labeled-left btn-sm" onclick="get_form(' . $row['id'] . ')"><b><i class="icon-pencil"></i></b>Edit</button>';
@@ -56,7 +66,7 @@ function displayNestableMenu($parent_id, $level, $Is_Edit, $Is_Delete = 0)
 }
 
 
-function getMenuList($parent_id = 0, $level = 1)
+/*function getMenuList($parent_id = 0, $level = 1)
 {
     $results = DB::table('menus as m')
         ->leftJoin(
@@ -133,9 +143,47 @@ function getMenuList($parent_id = 0, $level = 1)
     }
 
     return $render_html;
+}*/
+
+
+function getMenuList()
+{
+    // Fetch all menus ordered by position
+    $menus = \App\Models\Menu::whereNull('deleted_at')->orderBy('menu_position')->get();
+
+    $menuTree = [];
+    $menuMap = [];
+
+    foreach ($menus as $menu) {
+        $menuMap[$menu->id] = $menu;
+    }
+
+    foreach ($menuMap as $menu) {
+        if ($menu->parent_id == 0) {
+            $menuTree[] = $menu;
+        } else {
+            if (isset($menuMap[$menu->parent_id])) {
+                $parent = $menuMap[$menu->parent_id];
+                $parent->children = array_merge($parent->children, [$menu]);
+            }
+        }
+    }
+
+    return $menuTree;
 }
 
-
+ function addChildToParent(&$children, $menu)
+{
+    foreach ($children as $child) {
+        if ($child->id == $menu->parent_id) {
+            $child->children[] = $menu;
+            return true;
+        } elseif (isset($child->children)) {
+            addChildToParent($child->children, $menu);
+        }
+    }
+    return false;
+}
 
 
 function generateIconArray()

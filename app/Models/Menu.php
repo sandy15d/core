@@ -16,4 +16,20 @@ class Menu extends Model
         'menu_position',
         'menu_type',
     ];
+
+    protected $appends = ['children'];
+
+    public function getChildrenAttribute()
+    {
+        if (!array_key_exists('children', $this->attributes)) {
+            $this->attributes['children'] = [];
+        }
+
+        return $this->attributes['children'];
+    }
+
+    public function setChildrenAttribute($value)
+    {
+        $this->attributes['children'] = $value;
+    }
 }
