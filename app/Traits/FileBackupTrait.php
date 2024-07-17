@@ -13,7 +13,7 @@ trait FileBackupTrait
      * @param string $studlyCase
      * @return void
      */
-    public function backupExistingFiles($studlyCase)
+    public function backupExistingFiles(string $studlyCase): void
     {
         $modelDirectory = app_path("Models/{$studlyCase}");
         $controllerDirectory = app_path("Http/Controllers");
@@ -49,7 +49,7 @@ trait FileBackupTrait
      * @param string $destinationPath
      * @return void
      */
-    private function backupFile($sourcePath, $destinationPath)
+    private function backupFile(string $sourcePath, string $destinationPath): void
     {
         $destinationDir = dirname($destinationPath);
         if (!File::exists($destinationDir)) {
