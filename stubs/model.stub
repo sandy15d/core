@@ -1,0 +1,41 @@
+<?php
+
+namespace {{ namespace }};
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\FileUploadTrait;
+
+class {{ class }} extends Model
+{
+    use SoftDeletes;
+    use FileUploadTrait;
+
+    {{ table }}
+    {{ fillable }}
+
+    protected $dates = ['created_at','updated_at','deleted_at'];
+
+    {{ file_info }}
+
+    {{ methods }}
+
+    public function scopeStartSorting($query, $request): void
+    {
+        if ($request->has('{{ table_name }}_sort_by') && $request->{{ table_name }}_sort_by) {
+        if ($request->{{ table_name }}_direction == "desc"){
+            $query->orderByDesc($request->{{ table_name }}_sort_by);
+            } else {
+            $query->orderBy($request->{{ table_name }}_sort_by);
+            }
+        } else {
+             $query->orderByDesc("id");
+         }
+    }
+
+    public function scopeStartSearch($query, $search): void
+    {
+        if ($search) {
+            $query->where("id","like","%".$search."%");
+        }
+    }
+}
