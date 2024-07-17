@@ -29,6 +29,7 @@
             </div>
              <div class="form-header">
                 <h3>{{ isset($data->id) ? 'Update' : 'Add New' }}</h3>
+                @can('delete-{{ $page_name }}')
                 <div class="form-delete-record">
                     @if(isset($data->id))
                         <a href="#" data-link="{{route('{{ $snake_case }}.destroy',$data->id)}}" data-id="{{$data->id}}" class="delete-link js-ak-delete-link" draggable="false">
@@ -36,6 +37,7 @@
                         </a>
                     @endIf
                 </div>
+                @endcan
             </div>
             @includeIf("layouts.errors")
             <div class="form-content">

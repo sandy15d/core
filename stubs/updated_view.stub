@@ -36,14 +36,15 @@
                                     </div>
                                 </form>
                             </div>
+                            @can('add-{{ $page_name }}')
                             <div class="right">
                                 <a href="{{route('{{ $snake_case }}.create')}}" class="button primary-button add-new"
                                    draggable="false">
                                     @includeIf("layouts.icons.add_new_icon")
                                     Add New
                                 </a>
-
                             </div>
+                            @endcan
                         </div>
                     </div>
                     <div class="content table-content">
@@ -66,12 +67,16 @@
                                         {{ table_field }}
                                          <td class="manage-td">
                                             <div class="manage-links">
+                                            @can('edit-{{ $page_name }}')
                                                 <a href="{{route('{{ $snake_case }}.edit',$data->id)}}" class="edit-link"
                                                    draggable="false">@includeIf("layouts.icons.edit_icon")</a>
+                                            @endcan
+                                            @can('delete-{{ $page_name }}')
                                                 <a data-link="{{route('{{ $snake_case }}.destroy',$data->id)}}"
                                                    href="javascript:void(0);" data-id="{{$data->id}}"
                                                    class="delete-link js-ak-delete-link"
                                                    draggable="false">@includeIf("layouts.icons.delete_icon")</a>
+                                            @endcan
                                             </div>
                                         </td>
                                    </tr>
