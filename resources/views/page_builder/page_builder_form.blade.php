@@ -62,7 +62,7 @@
 
         .text-bg-dark {
             color: #fff !important;
-            background-color: rgb(165 133 163) !important;
+            background-color: rgb(68 41 67) !important;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
