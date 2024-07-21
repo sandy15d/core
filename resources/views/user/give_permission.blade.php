@@ -48,8 +48,8 @@
             @foreach($permissions as $permission => $value)
                 <div class="row mb-3" style="margin-left: 10px;margin-right: 10px;">
                     <div class="col-lg-12">
-                        <h6 style="width:280px; height: 40px;padding: 10px; border-radius: 0px 20px 0px 0px;background-color: #104154;color: #fff;line-height: 25px;"
-                            class="fw-semibold bg-light-success border-bottom border-primary mb-0">
+                        <h6 style="width:280px; height: 40px;padding: 10px; border-radius: 0px 20px 0px 0px;background-color: #7a5b79;color: #fff;line-height: 25px;"
+                            class="fw-semibold bg-light-success border-bottom  mb-0">
                             <span class=""><input type="checkbox" class="form-check-input {{$permission}}" onclick="checkAllPermissin('{{$permission}}');"> </span>{{ mb_strtoupper($permission) }}
                         </h6>
                         <div class="card-body" style="background-color: #f3f3f3;padding: 8px;border-bottom: 1px solid #ddd;">

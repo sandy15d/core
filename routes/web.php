@@ -36,7 +36,3 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('user/{user_id}/permission', [\App\Http\Controllers\UserController::class, 'give_permission'])->name('give_permission');
     Route::post('user/{user_id}/permission', [\App\Http\Controllers\UserController::class, 'set_user_permission'])->name('set_user_permission');
 });
-Route::resource('global_region', \App\Http\Controllers\GlobalRegion\GlobalRegionController::class);
-
-
-Route::resource('state', \App\Http\Controllers\State\StateController::class);
