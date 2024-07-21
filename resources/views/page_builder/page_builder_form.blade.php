@@ -164,6 +164,7 @@
                                         <input type="file" class="form-file js-ak-file-upload">
 
                                     @endif
+
                                 </div>
                                 <div class="action-div">
                                     <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
@@ -175,13 +176,14 @@
                                 </div>
                             </div>
                         </div>
+
                     @endforeach
                 @endif
             </div>
             @includeIf('layouts.form_footer', ['cancel_route' => ''])
         </form>
     </div>
-    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="ToolBar" aria-labelledby="ToolBarLabel"
+    <div class="offcanvas offcanvas-end text-bg-dark " tabindex="-1" id="ToolBar" aria-labelledby="ToolBarLabel"
          data-bs-scroll="true" data-bs-backdrop="static">
         <div class="offcanvas-header">
             <h5 id="ToolBarLabel" style="font-weight: bold;">Form Builder
@@ -216,17 +218,6 @@
             </div>
             <div class="row mt-1">
                 <div class="col add-form-element">
-                    <label><i class="fa-solid fa-at"></i> Email : </label>
-                    <p>Email input</p>
-                    <div class="input-group input-group-sm">
-                        <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
-                               aria-label="Enter Name" aria-describedby="button-addon2" id="emailName">
-                        <button class="btn btn-secondary" id="button-addon2" type="button"
-                                onclick="addInput('email', 'emailName')">Add
-                        </button>
-                    </div>
-                </div>
-                <div class="col add-form-element">
                     <label><i class="fa-solid fa-list-ol"></i> Numbers : </label>
                     <p>Integer numbers</p>
                     <div class="input-group input-group-sm">
@@ -235,7 +226,17 @@
                         <button class="btn btn-secondary" id="button-addon2" type="button"
                                 onclick="addInput('number','numberName')">Add
                         </button>
-
+                    </div>
+                </div>
+                <div class="col add-form-element">
+                    <label><i class="fa-solid fa-dollar-sign"></i> Decimal : </label>
+                    <p>Decimal numbers</p>
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
+                               id="decimalName" aria-label="Enter Name" aria-describedby="button-addon2">
+                        <button class="btn btn-secondary" id="button-addon2" type="button"
+                                onclick="addInput('text','decimalName')">Add
+                        </button>
                     </div>
                 </div>
             </div>
@@ -277,6 +278,17 @@
                     </div>
                 </div>
                 <div class="col add-form-element">
+                    <label><i class="fa-solid fa-at"></i> Email : </label>
+                    <p>Email input</p>
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
+                               aria-label="Enter Name" aria-describedby="button-addon2" id="emailName">
+                        <button class="btn btn-secondary" id="button-addon2" type="button"
+                                onclick="addInput('email', 'emailName')">Add
+                        </button>
+                    </div>
+                </div>
+                {{--<div class="col add-form-element">
                     <label><i class="fa-solid fa-list-check"></i> Checkbox Many : </label>
                     <p>Multi-checkbox</p>
                     <div class="input-group input-group-sm">
@@ -287,7 +299,7 @@
                         </button>
 
                     </div>
-                </div>
+                </div>--}}
             </div>
             {{--<div class="row mt-1">
                 <div class="col add-form-element">
@@ -362,6 +374,8 @@
                         </button>
                     </div>
                 </div>
+            </div>
+            <div class="row">
 
             </div>
             {{-- <div class="row mt-1">
@@ -388,26 +402,13 @@
                        </div>
                    </div>
              </div>--}}
-            <div class="row mt-1">
-                <div class="col add-form-element">
-                    <label><i class="fa-solid fa-font"></i> Header :</label>
-                    <p>Dropdown with search</p>
-                    <div class="input-group input-group-sm">
-                        <input class="form-control form-control-sm form-input" type="text" placeholder="Enter Name"
-                               id="selectName2" aria-label="Enter Name" aria-describedby="button-addon2">
-                        <button class="btn btn-secondary" id="button-addon2" type="button"
-                                onclick="addInput('select2','selectName2')">Add
-                        </button>
-                    </div>
-                </div>
 
-            </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasRight"
+    <div class="offcanvas offcanvas-end text-bg-dark w-auto" tabindex="-1" id="offcanvasRight"
          aria-labelledby="offcanvasRightLabel" data-bs-scroll="true" data-bs-backdrop="static">
         <div class="offcanvas-header">
-            <h5 id="offcanvasRightLabel" style="font-weight: bold;"><span id="input_type">Title Box</span> Setting
+            <h5 id="offcanvasRightLabel" style="font-weight: bold;"><span id="input_type">Title Box</span>
             </h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close">X
             </button>
@@ -416,25 +417,36 @@
             <form action="{{ route('form_element_update') }}" id="updateFormElement" method="POST">
                 @csrf
                 <input type="hidden" id="form_id" name="form_id">
-                <div class="form-group">
-                    <label for="">Label Name :</label>
-                    <input type="text" class="form-input" id="label_name" name="label_name">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">Label Name :</label>
+                            <input type="text" class="form-input" id="label_name" name="label_name">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">Column Name :</label>
+                            <input type="text" class="form-input" id="column_name" name="column_name">
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group mt-2">
-                    <label for="">Column Name :</label>
-                    <input type="text" class="form-input" id="column_name" name="column_name">
-                </div>
-                <div class="form-group mt-2">
-                    <label for="">Placeholder:</label>
-                    <input type="text" class="form-input" id="placeholder" name="placeholder">
-                </div>
-                <div class="form-group mt-2">
-                    <label for="">Default Value :</label>
-                    <input type="text" class="form-input" id="default_value" name="default_value">
+                <div class="row mt-2">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">Placeholder:</label>
+                            <input type="text" class="form-input" id="placeholder" name="placeholder">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">Default Value :</label>
+                            <input type="text" class="form-input" id="default_value" name="default_value">
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group mt-2">
                     <div class="ak-form-label"><label>Width</label></div>
-
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="width" id="row-100" value="row-100">
                         <label class="form-check-label" for="row-100">100%</label>
@@ -470,43 +482,73 @@
                         <input class="form-check-input" type="checkbox" id="is_unique" name="is_unique" value="N">
                         <label class="form-check-label" for="is_unique">Unique</label>
                     </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="is_nullable" name="is_nullable" value="N">
+                        <label class="form-check-label" for="is_nullable">Nullable</label>
+                    </div>
                 </div>
-                <div class="form-group mt-2">
+                <div class="form-group mt-2 d-none" id="typeDiv">
                     <label for="">Type</label>
                     <select name="column_type" id="column_type" class="form-select">
+                        <option value="">Select</option>
                         <option value="date">Date</option>
                         <option value="date_time">Date & Time</option>
                     </select>
                 </div>
-                <div class="form-group mt-2">
-                    <label for="">Source Table</label>
-                    <select name="source_table" id="source_table" class="form-select">
-                        <option value="">Select Source</option>
-                        @if ($source_table)
-                            @foreach ($source_table as $key => $value)
-                                <option value="{{ $value }}">{{ $value }}</option>
-                            @endforeach
-                        @endif
-                    </select>
+                <div class="row mt-2">
+                    <div class="form-group d-none" id="sourceDiv">
+                        <label for="">Source Table</label>
+                        <select name="source_table" id="source_table" class="form-select">
+                            <option value="">Select Source</option>
+                            @if ($source_table)
+                                @foreach ($source_table as $key => $value)
+                                    <option value="{{ $value }}">{{ $value }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group mt-2">
+                <div class="form-group mt-2  d-none" id="keyDiv">
                     <div class="row">
                         <div class="col">
                             <label for="">Key</label>
-                            <input type="text" class="form-input" id="source_table_key" name="source_table_key">
+                            <select name="source_table_key" id="source_table_key" class="form-select">
+
+                            </select>
                         </div>
                         <div class="col">
                             <label for="">Value</label>
-                            <input type="text" class="form-input" id="source_table_value" name="source_table_value">
+                            <select name="source_table_value" id="source_table_value" class="form-select">
+
+                            </select>
                         </div>
                     </div>
                 </div>
-                <div class="form-group mt-2">
-
+                <div class="form-group mt-2 d-none" id="switchDiv">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="is_switch" name="is_switch" value="N">
                         <label class="form-check-label" for="is_switch">Display as switch</label>
                     </div>
+                </div>
+                <div class="form-group mt-2 d-none" id="columnLengthDiv">
+                    <label for="">Column Length</label>
+                    <input type="text" class="form-input" id="column_length" name="column_length">
+                </div>
+                <div class="form-group mt-2  d-none" id="minMaxDiv">
+                    <div class="row">
+                        <div class="col">
+                            <label for="">Min value</label>
+                            <input type="text" class="form-input" id="min_value" name="min_value">
+                        </div>
+                        <div class="col">
+                            <label for="">Max value</label>
+                            <input type="text" class="form-input" id="max_value" name="max_value">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label for="">Description (Help Text)</label>
+                    <input type="text" id="description" name="description" class="form-input">
                 </div>
                 <div class="row mt-3">
                     <div class="col"></div>
@@ -635,13 +677,11 @@
                     if (data.status == 200) {
                         const elementDetails = data.data;
                         $("#form_id").val(form_id);
+                        $("#input_type").html("Settings For: " + elementDetails.column_title);
                         $("#label_name").val(elementDetails.column_title);
                         $("#column_name").val(elementDetails.column_name);
                         $("#placeholder").val(elementDetails.placeholder);
                         $("#default_value").val(elementDetails.default_value);
-                        $("#source_table").val(elementDetails.source_table);
-                        $("#source_table_key").val(elementDetails.source_table_column_key);
-                        $("#source_table_value").val(elementDetails.source_table_column_value);
 
                         // Handle column_width radio button selection
                         if (elementDetails.column_width === 'row-100') {
@@ -663,10 +703,51 @@
                             $('#updateFormElement').find(':radio[name="width"][value="row-25"]').prop('checked',
                                 true);
                         }
+                        $("#description").val(elementDetails.description);
+                        if (elementDetails.input_type === 'select' || elementDetails.input_type === 'select2') {
+                            $("#sourceDiv").removeClass('d-none');
+                            $("#keyDiv").removeClass('d-none');
+                            getSourceTableColumn(elementDetails.source_table);
+                            $("#source_table_key").val(elementDetails.source_table_column_key);
+                            $("#source_table_value").val(elementDetails.source_table_column_value);
+                        } else {
+                            $("#sourceDiv").addClass('d-none');
+                            $("#keyDiv").addClass('d-none');
+                        }
+
+                        if (elementDetails.input_type === 'date_time') {
+                            $("#typeDiv").removeClass('d-none');
+                            $("#column_type").val(elementDetails.column_type);
+                        } else {
+                            $("#typeDiv").addClass('d-none');
+                        }
+                        if (elementDetails.input_type === 'email' || elementDetails.input_type === 'text') {
+                            $("#columnLengthDiv").removeClass('d-none');
+                            $("#column_length").val(elementDetails.column_length);
+                        } else {
+                            $("#columnLengthDiv").addClass('d-none');
+                        }
+
+                        if (elementDetails.input_type === 'number' || elementDetails.input_type === 'decimal') {
+                            $("#minMaxDiv").removeClass('d-none');
+                            $("#min_value").val(elementDetails.min_value);
+                            $("#max_value").val(elementDetails.max_value);
+                        } else {
+                            $("#minMaxDiv").addClass('d-none');
+                        }
+
+
+                        if (elementDetails.input_type === 'checkbox') {
+                            $("#switchDiv").removeClass('d-none');
+                            setCheckboxProperties('is_switch', elementDetails.is_switch);
+                        } else {
+                            $("#switchDiv").addClass('d-none');
+                        }
 
                         setCheckboxProperties('is_required', elementDetails.is_required);
                         setCheckboxProperties('is_unique', elementDetails.is_unique);
-                        setCheckboxProperties('is_switch', elementDetails.is_switch);
+                        setCheckboxProperties('is_nullable', elementDetails.is_nullable);
+
                     } else {
                         console.error('Failed to fetch form details:', data.message);
                         // Handle error case if needed
@@ -688,6 +769,9 @@
             $(this).val(this.checked ? 'Y' : 'N');
         });
         $('#is_unique').click(function () {
+            $(this).val(this.checked ? 'Y' : 'N');
+        });
+        $('#is_nullable').click(function () {
             $(this).val(this.checked ? 'Y' : 'N');
         });
         $('#is_switch').click(function () {
@@ -714,6 +798,46 @@
                     }
                 }
             });
+        });
+
+        function getSourceTableColumn(table_name) {
+            $.ajax({
+                url: "{{route('get_source_table_columns')}}",
+                type: 'POST',
+                data: {
+                    source_table: table_name
+                },
+                async: false,
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+
+                success: function (data) {
+                    if (data.status === 200) {
+                        $("#source_table_key").empty();
+                        $("#source_table_value").empty();
+                        $.each(data.column_list, function (key, value) {
+                            $('#source_table_key').append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+
+                            $('#source_table_value').append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+                    } else {
+                        alert('something went wrong... try again!!');
+                    }
+                }
+            });
+        }
+
+        $(document).on("change", "#source_table", function () {
+            var source_table = $(this).val();
+            getSourceTableColumn(source_table);
         });
     </script>
 @endpush

@@ -5,17 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\FormBuilder;
 use App\Models\Menu;
 use App\Models\PageBuilder;
+use App\Models\User;
+use App\Rules\ReservedKeyword;
 use App\Traits\DatabaseTrait;
 use App\Traits\FileBackupTrait;
-use App\Traits\FileUploadTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use App\Services\PermissionService;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class PageBuilderController extends Controller
 {
@@ -43,8 +45,9 @@ class PageBuilderController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'page_name' => ['required'],
+            'page_name' => ['required', new ReservedKeyword],
         ]);
+
 
         $data['upper_case'] = Str::upper($request->page_name);
         $data['lower_case'] = Str::lower($request->page_name);
@@ -106,7 +109,7 @@ class PageBuilderController extends Controller
         $menu->menu_url = "{$data['snake_case']}";
         $menu->parent_id = 0;
         $menu->menu_position = 1;
-        $menu->menu_type = '';
+        $menu->permissions = 'list-' . $studly_case;
         $menu->status = 'A';
         $menu->save();
         return redirect(route("page-builder.index"))->with("toast_success", 'Page created successfully');
@@ -135,6 +138,7 @@ class PageBuilderController extends Controller
     {
         $snake_case = $pageBuilder->snake_case;
         $studly_case = Str::studly($snake_case);
+        $permissionArray = ["list-" . $studly_case, 'add-' . $studly_case, 'edit-' . $studly_case, 'delete-' . $studly_case];
         $lower_case = $pageBuilder->lower_case;
         $pageBuilder->delete();
         // Delete the controller file
@@ -160,12 +164,41 @@ class PageBuilderController extends Controller
         $routeContent = "\n\nRoute::resource('{$snake_case}', \App\Http\Controllers\\{$studly_case}\\{$studly_case}Controller::class);";
         file_put_contents($routeFilePath, str_replace($routeContent, '', file_get_contents($routeFilePath)));
         //Drop Table
-        Schema::drop($lower_case);
-        DB::table('menus')->where('menu_name', $studly_case)->delete();
+        //check if database has table schema
+        if (Schema::hasTable($lower_case)) {
+            Schema::drop($lower_case);
+        }
+
+        DB::table('menus')->where('menu_url', $snake_case)->delete();
         FormBuilder::where('page_name', $studly_case)->delete();
+        //remove permissions
+        $this->deletePermissions($permissionArray);
         return redirect(route("page-builder.index"))->with("toast_success", 'Page deleted successfully');
     }
+    function deletePermissions(array $permissions)
+    {
+        foreach ($permissions as $permissionName) {
+            // Find the permission by name
+            $permission = Permission::findByName($permissionName);
 
+            if ($permission) {
+                // Remove the permission from all roles
+                $roles = Role::all();
+                foreach ($roles as $role) {
+                    $role->revokePermissionTo($permissionName);
+                }
+
+                // Remove the permission from all users (or other models)
+                $users = User::permission($permissionName)->get();
+                foreach ($users as $user) {
+                    $user->revokePermissionTo($permissionName);
+                }
+
+                // Delete the permission from the database
+                $permission->delete();
+            }
+        }
+    }
     public function formGenerate(Request $request)
     {
         $page_id = base64_decode($request->page);
@@ -198,6 +231,7 @@ class PageBuilderController extends Controller
 
     public function updateFormElement(Request $request)
     {
+
         $data['column_title'] = $request->label_name;
         $data['column_name'] = $request->column_name;
         $data['column_width'] = $request->width;
@@ -205,11 +239,16 @@ class PageBuilderController extends Controller
         $data['default_value'] = isset($request->default_value) ? $request->default_value : null;
         $data['is_required'] = isset($request->is_required) ? $request->is_required : 'N';
         $data['is_unique'] = isset($request->is_unique) ? $request->is_unique : 'N';
+        $data['is_nullable'] = isset($request->is_nullable) ? $request->is_nullable : 'N';
         $data['is_switch'] = isset($request->is_switch) ? $request->is_switch : 'N';
         $data['source_table'] = isset($request->source_table) ? $request->source_table : null;
         $data['source_table_column_key'] = isset($request->source_table_key) ? $request->source_table_key : null;
         $data['source_table_column_value'] = isset($request->source_table_value) ? $request->source_table_value : null;
         $data['column_type'] = isset($request->column_type) ? $request->column_type : null;
+        $data['description'] = isset($request->description) ? $request->description : null;
+        $data['column_length'] = isset($request->column_length) ? $request->column_length : null;
+        $data['min_value'] = isset($request->min_value) ? $request->min_value : null;
+        $data['max_value'] = isset($request->max_value) ? $request->max_value : null;
         $query = FormBuilder::find($request->form_id);
         $query->update($data);
         return redirect()->back()->with('toast_success', "Form updated successfully");
@@ -254,7 +293,7 @@ class PageBuilderController extends Controller
                     'column_type' => 'string',
                     'column_name' => $row->column_name,
                     'column_length' => '255',
-                    'is_nullable' => 0,
+                    'is_nullable' => $row->is_nullable == 'Y' ? 1 : 0,
                     'is_unique' => $row->is_unique == 'Y' ? 1 : 0,
                     'is_unsigned' => 0,
                     'column_default' => $row->default_value,
@@ -282,7 +321,7 @@ class PageBuilderController extends Controller
 
             ];
             foreach ($permissions as $permission) {
-                $this->permissionService->createAndAssignPermission($permission,$studly_case);
+                $this->permissionService->createAndAssignPermission($permission, $studly_case);
             }
             return response()->json(['status' => 200], 200);
         } catch (\Exception $exception) {
@@ -410,8 +449,9 @@ class PageBuilderController extends Controller
             ->get()
             ->toArray();
         foreach ($relationDetails as $relationDetail) {
-            $relation_table_name = $relationDetail['source_table'];
+            $relation_table_name = get_studly_case($relationDetail['source_table']);
             $lower_case = Str::lower($relation_table_name);
+
             $column_name = $relationDetail['column_name'];
 
             $methods .= 'public function ' . $lower_case . '() {' . PHP_EOL;
@@ -448,7 +488,7 @@ class PageBuilderController extends Controller
 
         // Prepare column names and related column titles
         $columnNames = implode(', ', $quotedColumns);
-        $formDetails = FormBuilder::where('page_id', $page_id)->pluck('column_title')->toArray();
+        $formDetails = FormBuilder::where('page_id', $page_id)->orderBy('sorting_order')->pluck('column_title')->toArray();
         $column_name_field = '';
         foreach ($formDetails as $col) {
             $column_name_field .= "   <th>{$col}</th>";
@@ -460,8 +500,8 @@ class PageBuilderController extends Controller
 
         foreach ($table_columns as $cols) {
             if ($cols->source_table != null && $cols->source_table_column_value != null) {
-                $relation_table = Str::lower($cols->source_table);
-                $table_field .= '<td>{{ $data->' . $relation_table . '->' . $cols->source_table_column_value . ' }}</td>' . "\n";
+                $relation_table = Str::lower(get_studly_case($cols->source_table));
+                $table_field .= '<td>{{ $data->' . $relation_table . '->' . $cols->source_table_column_value . ' ?? "" }}</td>' . "\n";
             } else {
                 switch ($cols->input_type) {
                     case 'image_upload':
@@ -489,10 +529,11 @@ class PageBuilderController extends Controller
             }
         }
 
+        $studly_case_page_name = Str::studly($page_name);
         // Replace placeholders in the stub content
         $viewContent = str_replace(
-            ['{{ $page_name }}', '{{ $snake_case }}', '{{ $columns }}', '{{ column_names }}', '{{ table_field }}'],
-            [$page_name, $table_name, $columnNames, $column_name_field, $table_field],
+            ['{{ $page_name }}', '{{ $snake_case }}', '{{ $columns }}', '{{ column_names }}', '{{ table_field }}', '{{ studly_case }}'],
+            [$page_name, $table_name, $columnNames, $column_name_field, $table_field, $studly_case_page_name],
             $viewContent
         );
 
@@ -513,10 +554,10 @@ class PageBuilderController extends Controller
         $viewStub = base_path('stubs/form.stub');
         $viewContent = File::get($viewStub);
         $fields = $this->generateFields($page_id);
-
+        $studly_case_page_name = Str::studly($page_name);
         $viewContent = str_replace(
-            ['{{ $page_name }}', '{{ $snake_case }}', '{{ $fields }}'],
-            [$page_name, $table_name, $fields],
+            ['{{ $page_name }}', '{{ $snake_case }}', '{{ $fields }}', '{{ studly_case }}'],
+            [$page_name, $table_name, $fields, $studly_case_page_name],
             $viewContent
         );
 
@@ -529,6 +570,7 @@ class PageBuilderController extends Controller
         $fields = '';
 
         foreach ($formElements as $formElement) {
+
             $fields .= $this->generateFieldHtml($formElement);
         }
 
@@ -547,15 +589,22 @@ class PageBuilderController extends Controller
         $sourceTable = $formElement->source_table;
         $sourceTableColumnKey = $formElement->source_table_column_key;
         $sourceTableColumnValue = $formElement->source_table_column_value;
+        $description = $formElement->description;
         $column_type = $formElement->column_type;
         $is_switch = $formElement->is_switch;
+        $min_value = $formElement->min_value;
+        $max_value = $formElement->max_value;
         $required = '';
         if ($isRequired == 'Y') {
             $required = '<span class="required">*</span>';
         }
 
         // Helper function to generate common HTML structure
-        $generateInputHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required) {
+        $generateInputHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required, $description, $min_value, $max_value) {
+            $min_max_check = ($min_value != null || $max_value != null) ? 'js-ak-limit-poz-neg-numbers' : '';
+            $min = $min_value != null ? 'min="' . $min_value . '"' : '';
+            $max = $max_value != null ? 'max="' . $max_value . '"' : '';
+            $min_max_hint = ($min_value != null || $max_value != null) ? 'Min: ' . $min_value . ' Max: ' . $max_value . '' : '';
             return <<<HTML
             <div class="{$columnWidth}">
                 <div class="input-container">
@@ -563,12 +612,14 @@ class PageBuilderController extends Controller
                         <label for="{$columnName}">{$columnTitle} {$required}</label>
                     </div>
                     <div class="input-data">
-                        <input type="{$type}" class="form-input" id="{$columnName}" autocomplete="off"
+                        <input type="{$type}" class="form-input {$min_max_check}" id="{$columnName}" autocomplete="off"
                             name="{$columnName}" placeholder="{$placeholder}"
-                            value="{{ old('{$columnName}', \$data->{$columnName} ?? '') }}">
+                            value="{{ old('{$columnName}', \$data->{$columnName} ?? '') }}" {$min} {$max} />
                         <div class="error-message @if (\$errors->has('{$columnName}')) show @endif">
                             Required!</div>
-                        <div class="text-muted" id="{$columnName}_help"></div>
+                        <div class="text-muted" id="{$columnName}_help">{$description}
+                            {$min_max_hint}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -576,7 +627,7 @@ class PageBuilderController extends Controller
         };
 
         // Helper function to generate textarea structure
-        $generateTextAreaHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required) {
+        $generateTextAreaHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required, $description) {
             return <<<HTML
             <div class="{$columnWidth}">
                 <div class="input-container">
@@ -587,14 +638,14 @@ class PageBuilderController extends Controller
                         <textarea class="form-input form-textarea js-ak-tiny-mce-simple-text-editor" id="{$columnName}" name="{$columnName}" data-height="250" style="height:250px" name="{$columnName}"  placeholder="{$placeholder}">{{ old('{$columnName}', \$data->{$columnName} ?? '') }}</textarea>
                         <div class="error-message @if (\$errors->has('{$columnName}')) show @endif">
                             Required!</div>
-                        <div class="text-muted" id="{$columnName}_help"></div>
+                        <div class="text-muted" id="{$columnName}_help">{$description}</div>
                     </div>
                 </div>
             </div>
         HTML;
         };
         // Helper function to generate Date Time HTML structure
-        $generateDateHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required, $column_type) {
+        $generateDateHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required, $column_type, $description) {
             $inputClass = $column_type === 'date_time' ? 'js-ak-date-time-picker' : 'js-ak-date-picker';
             return <<<HTML
             <div class="{$columnWidth}">
@@ -602,28 +653,34 @@ class PageBuilderController extends Controller
                     <div class="input-label">
                         <label for="{$columnName}">{$columnTitle} {$required}</label>
                     </div>
-                     <div class="group-input date-time-group" id="ak_date_group_{$columnName}">
-                        <input type="text" name="{$columnName}"
-                               autocomplete="off" id="{$columnName}"
-                               class="form-input {$inputClass}"
-                               placeholder="{$placeholder}" value="{{ old('{$columnName}', isset(\$data->$columnName)?\$data->getRawOriginal('$columnName') : '') }}">
-                        <div class="input-suffix js-ak-calendar-icon"
-                             data-target="#{$columnName}">
-                            @includeIf("layouts.icons.calendar_icon")
+                    <div class="input-data">
+                         <div class="group-input date-time-group" id="ak_date_group_{$columnName}">
+                            <input type="text" name="{$columnName}"
+                                   autocomplete="off" id="{$columnName}"
+                                   class="form-input {$inputClass}"
+                                   placeholder="{$placeholder}" value="{{ old('{$columnName}', isset(\$data->$columnName)?\$data->getRawOriginal('$columnName') : '') }}">
+                            <div class="input-suffix js-ak-calendar-icon"
+                                 data-target="#{$columnName}">
+                                @includeIf("layouts.icons.calendar_icon")
+                            </div>
+                            <div class="error-message @if (\$errors->has('{$columnName}')) show @endif">
+                                Required!</div>
                         </div>
+                        <div class="text-muted" id="{$columnName}_help">{$description}</div>
                     </div>
                 </div>
             </div>
         HTML;
         };
         // Helper function to generate Time HTML structure
-        $generateTimeHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required) {
+        $generateTimeHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required, $description) {
             return <<<HTML
             <div class="{$columnWidth}">
                 <div class="input-container">
                     <div class="input-label">
                         <label for="{$columnName}">{$columnTitle} {$required}</label>
                     </div>
+                     <div class="input-data">
                      <div class="group-input date-time-group" id="ak_date_group_{$columnName}">
                         <input type="text" name="{$columnName}"
                                autocomplete="off" id="{$columnName}"
@@ -633,13 +690,16 @@ class PageBuilderController extends Controller
                              data-target="#{$columnName}">
                             @includeIf("layouts.icons.time_icon")
                         </div>
+                         <div class="text-muted" id="{$columnName}_help">{$description}</div>
+                    </div>
+                      <div class="text-muted" id="{$columnName}_help">{$description}</div>
                     </div>
                 </div>
             </div>
         HTML;
         };
 
-        $generateCheckboxHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $required, $is_switch) {
+        $generateCheckboxHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $required, $is_switch, $description) {
             $switch = $is_switch == 'Y' ? ' form-switch' : '';
             return <<<HTML
             <div class="{$columnWidth}">
@@ -647,18 +707,21 @@ class PageBuilderController extends Controller
                     <div class="input-label">
                         <label for="{$columnName}">{$columnTitle} {$required}</label>
                     </div>
+                    <div class="input-data">
                      <div class="checkbox-input {$switch}">
                                 <input type="hidden" name="{$columnName}" value="0">
                                 <input class="form-checkbox" type="checkbox" id="{$columnName}" name="{$columnName}" value="1"
                                        @if(old("{$columnName}") || ((isset(\$data->{$columnName})&&\$data->{$columnName}==1))) checked @endif >
                                 <label class="form-check-label" for="{$columnName}"></label>
                      </div>
+                      <div class="text-muted" id="{$columnName}_help">{$description}</div>
+                     </div>
                 </div>
             </div>
         HTML;
         };
 
-        $generateMultiCheckboxHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $required, $sourceTable, $sourceTableColumnKey, $sourceTableColumnValue) {
+        $generateMultiCheckboxHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $required, $sourceTable, $sourceTableColumnKey, $sourceTableColumnValue, $description) {
             return <<<HTML
             <div class="{$columnWidth}">
                 <div class="input-container">
@@ -678,7 +741,7 @@ class PageBuilderController extends Controller
         HTML;
         };
 
-        $generateImageUploadHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required) {
+        $generateImageUploadHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required, $description) {
             return <<<HTML
             <div class="{$columnWidth}">
                 <div class="input-container">
@@ -708,16 +771,14 @@ class PageBuilderController extends Controller
                             <div class="error-message @if (\$errors->has('{$columnName}')) show @endif" data-required="Image is required!" data-size="Invalid file size!" data-type="Invalid file type!" data-size-type="Invalid file size or type!">
                                 @if (\$errors->has('{$columnName}')){{ \$errors->first('{$columnName}') }}@endif
                             </div>
-                        <div class="text-muted" id="{$columnName}_help">Allowed
-                                            extension:.jpg,.jpeg,.png,.webp. Recommended width 1920px, height 1080px.
-                                            Image action: resize.</div>
+                       <div class="text-muted" id="{$columnName}_help">{$description}</div>
                     </div>
                 </div>
             </div>
         HTML;
         };
 
-        $generateFileUploadHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required) {
+        $generateFileUploadHtml = function ($type) use ($columnWidth, $columnName, $columnTitle, $placeholder, $required, $description) {
             return <<<HTML
             <div class="{$columnWidth}">
                 <div class="input-container">
@@ -747,7 +808,7 @@ class PageBuilderController extends Controller
                             <div class="error-message @if (\$errors->has('{$columnName}')) show @endif" data-required="File is required!" data-size="Invalid file size!" data-type="Invalid file type!" data-size-type="Invalid file size or type!">
                                 @if (\$errors->has('{$columnName}')){{ \$errors->first('{$columnName}') }}@endif
                             </div>
-                        <div class="text-muted" id="{$columnName}_help"></div>
+                        <div class="text-muted" id="{$columnName}_help">{$description}</div>
                     </div>
                 </div>
             </div>
@@ -766,9 +827,9 @@ class PageBuilderController extends Controller
                 return $generateTimeHtml($inputType);
             case 'select':
                 $optionsHtml = '<option value="">Select ' . $columnTitle . '</option>';
-
+                $snake_case_table_name = get_snake_case($sourceTable);
                 if ($sourceTable) {
-                    $optionsHtml .= '@foreach ($' . $sourceTable . '_list as $list)
+                    $optionsHtml .= '@foreach ($' . $snake_case_table_name . '_list as $list)
                                         <option value="{{$list->' . $sourceTableColumnKey . '}}" {{ $data->' . $columnName . ' == $list->' . $sourceTableColumnKey . ' ? "selected" : "" }}>{{ $list->' . $sourceTableColumnValue . ' }}</option>
                                      @endforeach';
                 }
@@ -784,16 +845,16 @@ class PageBuilderController extends Controller
                             </select>
                             <div class="error-message @if (\$errors->has('{$columnName}')) show @endif">
                                 Required!</div>
-                            <div class="text-muted" id="{$columnName}_help"></div>
+                            <div class="text-muted" id="{$columnName}_help">{$description}</div>
                         </div>
                     </div>
                 </div>
             HTML;
             case 'select2':
-                $optionsHtml = '<option value="">Select ' . $columnTitle . '</option>';
-
+                $optionsHtml = '<option value="">Select ' . $columnTitle . '</option><br>';
+                $snake_case_table_name = get_snake_case($sourceTable);
                 if ($sourceTable) {
-                    $optionsHtml .= '@foreach ($' . $sourceTable . '_list as $list)
+                    $optionsHtml .= '@foreach ($' . $snake_case_table_name . '_list as $list)
                                         <option value="{{$list->' . $sourceTableColumnKey . '}}" {{ $data->' . $columnName . ' == $list->' . $sourceTableColumnKey . ' ? "selected" : "" }}>{{ $list->' . $sourceTableColumnValue . ' }}</option>
                                      @endforeach';
                 }
@@ -809,7 +870,7 @@ class PageBuilderController extends Controller
                             </select>
                             <div class="error-message @if (\$errors->has('{$columnName}')) show @endif">
                                 Required!</div>
-                            <div class="text-muted" id="{$columnName}_help"></div>
+                           <div class="text-muted" id="{$columnName}_help">{$description}</div>
                         </div>
                     </div>
                 </div>
@@ -879,9 +940,9 @@ class PageBuilderController extends Controller
 
         if (!empty($relatedTables)) {
             foreach (explode(',', $relatedTables) as $table) {
-                $table_new = Str::lower($table);
-                $controllerContent .= "        \${$table}_list = DB::table('{$table_new}')->get();\n";
-                $compactVariables .= ", '{$table}_list'";
+                $table_new = Str::lower(get_snake_case($table));
+                $controllerContent .= "        \${$table_new}_list = DB::table('{$table_new}')->get();\n";
+                $compactVariables .= ", '{$table_new}_list'";
             }
         }
 
@@ -922,7 +983,8 @@ class PageBuilderController extends Controller
 
         if (!empty($relatedTables)) {
             foreach (explode(',', $relatedTables) as $table) {
-                $controllerContent .= "        \${$table}_list = DB::table('{$table}')->get();\n";
+                $new_table = get_snake_case($table);
+                $controllerContent .= "        \${$new_table}_list = DB::table('{$new_table}')->get();\n";
             }
         }
         $controllerContent .= "        return view('{$tableName}.{$tableName}_form', compact({$compactVariables}));\n";
@@ -980,5 +1042,21 @@ class PageBuilderController extends Controller
         $form_id = $request->form_id;
         FormBuilder::find($form_id)->delete();
         return response()->json(['msg' => 'Deleted Successfully!', 'status' => 200]);
+    }
+
+    public function getSourceTableColumns(Request $request)
+    {
+        $source_table = Str::lower(Str::snake($request->source_table));
+        $source_table_columns = Schema::getColumnListing($source_table);
+
+        // Filter out the excluded columns and transform the remaining columns
+        $result = array_reduce($source_table_columns, function ($carry, $column) {
+            if (!in_array($column, ['created_at', 'updated_at', 'deleted_at'])) {
+                $carry[$column] = Str::title(str_replace('_', ' ', $column));
+            }
+            return $carry;
+        }, []);
+
+        return response()->json(['status' => 200, 'column_list' => $result]);
     }
 }

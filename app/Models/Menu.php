@@ -14,7 +14,7 @@ class Menu extends Model
         'menu_url',
         'parent_id',
         'menu_position',
-        'menu_type',
+        'permissions'
     ];
 
     protected $appends = ['children'];

@@ -71,12 +71,13 @@
                             </form>
                         </div>
                         <div class="right">
-                            <a href="{{route('user.create')}}" class="button primary-button add-new"
-                               draggable="false">
-                                @includeIf("layouts.icons.add_new_icon")
-                                Add New
-                            </a>
-
+                            @can('delete-user')
+                                <a href="{{route('user.create')}}" class="button primary-button add-new"
+                                   draggable="false">
+                                    @includeIf("layouts.icons.add_new_icon")
+                                    Add New
+                                </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -112,12 +113,21 @@
 
                                 <td class="manage-td">
                                     <div class="manage-links">
-                                        <a href="{{route('user.edit',$data->id)}}" class="edit-link"
-                                           draggable="false">@includeIf("layouts.icons.edit_icon")</a>
-                                        <a data-link="{{route('user.destroy',$data->id)}}"
-                                           href="javascript:void(0);" data-id="{{$data->id}}"
-                                           class="delete-link js-ak-delete-link"
-                                           draggable="false">@includeIf("layouts.icons.delete_icon")</a>
+                                        @canany(['add-user','edit-user'])
+                                            <a class="btn btn-sm btn-link text-decoration-none"
+                                               href="{{ route('give_permission', ['user_id' => $data->id]) }}">@includeIf("layouts.icons.map_icon")</a>
+
+                                        @endcanany
+                                        @can('edit-user')
+                                            <a href="{{route('user.edit',$data->id)}}" class="edit-link"
+                                               draggable="false">@includeIf("layouts.icons.edit_icon")</a>
+                                        @endcan
+                                        @can('delete-user')
+                                            <a data-link="{{route('user.destroy',$data->id)}}"
+                                               href="javascript:void(0);" data-id="{{$data->id}}"
+                                               class="delete-link js-ak-delete-link"
+                                               draggable="false">@includeIf("layouts.icons.delete_icon")</a>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

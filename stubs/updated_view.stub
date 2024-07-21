@@ -2,9 +2,7 @@
 @push('breadcrumb')
     <li class="breadcrumb-item active">{{ $page_name }}</li>
 @endpush
-@push('page-title')
-{{ $page_name }}
-@endpush
+
 @section('content')
      <div class="page-content-width-full">
             <div
@@ -36,7 +34,7 @@
                                     </div>
                                 </form>
                             </div>
-                            @can('add-{{ $page_name }}')
+                            @can('add-{{ studly_case }}')
                             <div class="right">
                                 <a href="{{route('{{ $snake_case }}.create')}}" class="button primary-button add-new"
                                    draggable="false">
@@ -67,11 +65,11 @@
                                         {{ table_field }}
                                          <td class="manage-td">
                                             <div class="manage-links">
-                                            @can('edit-{{ $page_name }}')
+                                            @can('edit-{{ studly_case }}')
                                                 <a href="{{route('{{ $snake_case }}.edit',$data->id)}}" class="edit-link"
                                                    draggable="false">@includeIf("layouts.icons.edit_icon")</a>
                                             @endcan
-                                            @can('delete-{{ $page_name }}')
+                                            @can('delete-{{ studly_case }}')
                                                 <a data-link="{{route('{{ $snake_case }}.destroy',$data->id)}}"
                                                    href="javascript:void(0);" data-id="{{$data->id}}"
                                                    class="delete-link js-ak-delete-link"

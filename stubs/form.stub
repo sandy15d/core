@@ -3,9 +3,7 @@
     <li class="breadcrumb-item">Form</li>
     <li class="breadcrumb-item active"> {{ $page_name }}</li>
 @endpush
-@push('page-title')
-{{ $page_name }}
-@endpush
+
 @push('page-back-button')
     <div class="page-back-button">
         <a href="{{ route("{{ $snake_case }}.index") }}">
@@ -29,7 +27,7 @@
             </div>
              <div class="form-header">
                 <h3>{{ isset($data->id) ? 'Update' : 'Add New' }}</h3>
-                @can('delete-{{ $page_name }}')
+                @can('delete-{{ studly_case }}')
                 <div class="form-delete-record">
                     @if(isset($data->id))
                         <a href="#" data-link="{{route('{{ $snake_case }}.destroy',$data->id)}}" data-id="{{$data->id}}" class="delete-link js-ak-delete-link" draggable="false">
