@@ -449,7 +449,7 @@ class PageBuilderController extends Controller
             ->get()
             ->toArray();
         foreach ($relationDetails as $relationDetail) {
-            $relation_table_name = get_studly_case($relationDetail['source_table']);
+            $relation_table_name = $this->get_studly_case($relationDetail['source_table']);
             $lower_case = Str::lower($relation_table_name);
 
             $column_name = $relationDetail['column_name'];
@@ -500,7 +500,7 @@ class PageBuilderController extends Controller
 
         foreach ($table_columns as $cols) {
             if ($cols->source_table != null && $cols->source_table_column_value != null) {
-                $relation_table = Str::lower(get_studly_case($cols->source_table));
+                $relation_table = Str::lower($this->get_studly_case($cols->source_table));
                 $table_field .= '<td>{{ $data->' . $relation_table . '->' . $cols->source_table_column_value . ' ?? "" }}</td>' . "\n";
             } else {
                 switch ($cols->input_type) {
@@ -827,7 +827,7 @@ class PageBuilderController extends Controller
                 return $generateTimeHtml($inputType);
             case 'select':
                 $optionsHtml = '<option value="">Select ' . $columnTitle . '</option>';
-                $snake_case_table_name = get_snake_case($sourceTable);
+                $snake_case_table_name = $this->get_snake_case($sourceTable);
                 if ($sourceTable) {
                     $optionsHtml .= '@foreach ($' . $snake_case_table_name . '_list as $list)
                                         <option value="{{$list->' . $sourceTableColumnKey . '}}" {{ $data->' . $columnName . ' == $list->' . $sourceTableColumnKey . ' ? "selected" : "" }}>{{ $list->' . $sourceTableColumnValue . ' }}</option>
@@ -852,7 +852,7 @@ class PageBuilderController extends Controller
             HTML;
             case 'select2':
                 $optionsHtml = '<option value="">Select ' . $columnTitle . '</option><br>';
-                $snake_case_table_name = get_snake_case($sourceTable);
+                $snake_case_table_name = $this->get_snake_case($sourceTable);
                 if ($sourceTable) {
                     $optionsHtml .= '@foreach ($' . $snake_case_table_name . '_list as $list)
                                         <option value="{{$list->' . $sourceTableColumnKey . '}}" {{ $data->' . $columnName . ' == $list->' . $sourceTableColumnKey . ' ? "selected" : "" }}>{{ $list->' . $sourceTableColumnValue . ' }}</option>
@@ -940,7 +940,7 @@ class PageBuilderController extends Controller
 
         if (!empty($relatedTables)) {
             foreach (explode(',', $relatedTables) as $table) {
-                $table_new = Str::lower(get_snake_case($table));
+                $table_new = Str::lower($this->get_snake_case($table));
                 $controllerContent .= "        \${$table_new}_list = DB::table('{$table_new}')->get();\n";
                 $compactVariables .= ", '{$table_new}_list'";
             }
@@ -983,7 +983,7 @@ class PageBuilderController extends Controller
 
         if (!empty($relatedTables)) {
             foreach (explode(',', $relatedTables) as $table) {
-                $new_table = get_snake_case($table);
+                $new_table = $this->get_snake_case($table);
                 $controllerContent .= "        \${$new_table}_list = DB::table('{$new_table}')->get();\n";
             }
         }
@@ -1059,4 +1059,13 @@ class PageBuilderController extends Controller
 
         return response()->json(['status' => 200, 'column_list' => $result]);
     }
+
+    function get_studly_case($page_name){
+        return \App\Models\PageBuilder::where('page_name',$page_name)->first()->studly_case;
+    }
+
+    function get_snake_case($page_name){
+        return \App\Models\PageBuilder::where('page_name',$page_name)->first()->snake_case;
+    }
+
 }
