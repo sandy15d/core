@@ -13,11 +13,14 @@ trait DatabaseTrait
         foreach ($tableData as $data) {
 
             // Create table if not exists
-            if(!Schema::hasTable($data->table_name)) {
+            if (!Schema::hasTable($data->table_name)) {
                 Schema::create($data->table_name, function (Blueprint $table) {
                     $table->id();
                     $table->timestamps();
                     $table->softDeletes();
+                    $table->integer('created_by')->nullable();
+                    $table->integer('updated_by')->nullable();
+                    $table->integer('deleted_by')->nullable();
                 });
             } else {
                 // Ensure the created_at, updated_at, and deleted_at columns exist
@@ -28,7 +31,18 @@ trait DatabaseTrait
                     if (!Schema::hasColumn($table->getTable(), 'deleted_at')) {
                         $table->softDeletes();
                     }
+                    if (Schema::hasColumn($table->getTable(), 'created_by')) {
+                        $table->integer('created_by')->nullable();
+                    }
+                    if (Schema::hasColumn($table->getTable(), 'updated_by')) {
+                        $table->integer('updated_by')->nullable();
+                    }
+                    if (Schema::hasColumn($table->getTable(), 'deleted_by')) {
+                        $table->integer('deleted_by')->nullable();
+                    }
                 });
+
+
             }
 
             // Alter table to add or modify columns
@@ -51,9 +65,9 @@ trait DatabaseTrait
                             if ($column_data->is_unsigned == 1) {
                                 $column->unsigned();
                             }
-                          /*  if (isset($column_data->column_after)) {
-                                $column->after($column_data->column_after);
-                            }*/
+                            /*  if (isset($column_data->column_after)) {
+                                  $column->after($column_data->column_after);
+                              }*/
                         } else {
                             // Modify existing column if necessary
                             if ($column_data->is_nullable == 1) {
@@ -73,7 +87,7 @@ trait DatabaseTrait
                             break;
                         }
                     }
-                    if (!$found && !in_array($existingColumn, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
+                    if (!$found && !in_array($existingColumn, ['id', 'created_at', 'updated_at', 'deleted_at','created_by', 'updated_by', 'deleted_by'])) {
                         Schema::table($data->table_name, function (Blueprint $table) use ($existingColumn) {
                             $table->string($existingColumn)->nullable()->change();
                         });
