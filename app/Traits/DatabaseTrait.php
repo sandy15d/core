@@ -31,15 +31,7 @@ trait DatabaseTrait
                     if (!Schema::hasColumn($table->getTable(), 'deleted_at')) {
                         $table->softDeletes();
                     }
-                    if (Schema::hasColumn($table->getTable(), 'created_by')) {
-                        $table->integer('created_by')->nullable();
-                    }
-                    if (Schema::hasColumn($table->getTable(), 'updated_by')) {
-                        $table->integer('updated_by')->nullable();
-                    }
-                    if (Schema::hasColumn($table->getTable(), 'deleted_by')) {
-                        $table->integer('deleted_by')->nullable();
-                    }
+
                 });
 
 
@@ -87,7 +79,7 @@ trait DatabaseTrait
                             break;
                         }
                     }
-                    if (!$found && !in_array($existingColumn, ['id', 'created_at', 'updated_at', 'deleted_at','created_by', 'updated_by', 'deleted_by'])) {
+                    if (!$found && !in_array($existingColumn, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
                         Schema::table($data->table_name, function (Blueprint $table) use ($existingColumn) {
                             $table->string($existingColumn)->nullable()->change();
                         });
