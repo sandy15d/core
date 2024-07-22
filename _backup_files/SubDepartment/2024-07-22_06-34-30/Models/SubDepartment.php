@@ -1,36 +1,32 @@
 <?php
 
-namespace App\Models\District;
+namespace App\Models\SubDepartment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\FileUploadTrait;
 use Illuminate\Support\Facades\Auth;
 
-class District extends Model
+class SubDepartment extends Model
 {
     use SoftDeletes;
     use FileUploadTrait;
 
     
-    protected $table = 'district';
+    protected $table = 'sub_department';
 
     
-    protected $fillable = ['state_id', 'district_name', 'district_code', 'effective_date', 'is_active', 'numeric_code'];
+    protected $fillable = ['sub_department_name', 'sub_department_code', 'numeric_code', 'effective_date', 'is_active'];
 
     protected $dates = ['created_at','updated_at','deleted_at'];
     
-    public function state() {
-    return $this->belongsTo("App\Models\State\State", "state_id");
-}
-
-
+    
     public function scopeStartSorting($query, $request): void
     {
-        if ($request->has('district_sort_by') && $request->district_sort_by) {
-        if ($request->district_direction == "desc"){
-            $query->orderByDesc($request->district_sort_by);
+        if ($request->has('sub_department_sort_by') && $request->sub_department_sort_by) {
+        if ($request->sub_department_direction == "desc"){
+            $query->orderByDesc($request->sub_department_sort_by);
             } else {
-            $query->orderBy($request->district_sort_by);
+            $query->orderBy($request->sub_department_sort_by);
             }
         } else {
              $query->orderByDesc("id");

@@ -49,3 +49,17 @@ Route::resource('district', \App\Http\Controllers\District\DistrictController::c
 Route::resource('block', \App\Http\Controllers\Block\BlockController::class);
 
 Route::resource('org_function', \App\Http\Controllers\OrgFunction\OrgFunctionController::class);
+
+Route::resource('vertical', \App\Http\Controllers\Vertical\VerticalController::class);
+
+Route::resource('department', \App\Http\Controllers\Department\DepartmentController::class);
+
+Route::resource('sub_department', \App\Http\Controllers\SubDepartment\SubDepartmentController::class);
+
+Route::resource('section', \App\Http\Controllers\Section\SectionController::class);
+
+Route::resource('crop', \App\Http\Controllers\Crop\CropController::class);
+
+Route::resource('variety', \App\Http\Controllers\Variety\VarietyController::class);
+
+Route::resource('category', \App\Http\Controllers\Category\CategoryController::class);

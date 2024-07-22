@@ -1,32 +1,32 @@
 @extends('layouts.app')
 @push('breadcrumb')
-    <li class="breadcrumb-item active">District</li>
+    <li class="breadcrumb-item active">Crop</li>
 @endpush
 
 @section('content')
      <div class="page-content-width-full">
             <div
-                class="content-layout content-width-full district-data-content js-ak-DataTable js-ak-delete-container js-ak-content-layout"
-                data-id="district"
+                class="content-layout content-width-full crop-data-content js-ak-DataTable js-ak-delete-container js-ak-content-layout"
+                data-id="crop"
                 data-delete-modal-action="">
                 <div class="content-element">
                     <div class="content-header">
                         <div class="header">
-                            <h3>District List</h3>
+                            <h3>Crop List</h3>
                         </div>
                         <div class="action">
                             <div class="left">
                                 <form class="search-container">
-                                    <input name="district_source" value="district" type="hidden"/>
-                                    <input name="district_length" value="{{Request()->query("district_length")}}" type="hidden"/>
+                                    <input name="crop_source" value="crop" type="hidden"/>
+                                    <input name="crop_length" value="{{Request()->query("crop_length")}}" type="hidden"/>
                                     <div class="search">
-                                        <input type="text" autocomplete="off" placeholder="Search" name="district_search"
-                                               value="{{(Request()->query("district_source") == "district")?Request()->query("district_search")??"":""}}"
+                                        <input type="text" autocomplete="off" placeholder="Search" name="crop_search"
+                                               value="{{(Request()->query("crop_source") == "crop")?Request()->query("crop_search")??"":""}}"
                                                class="form-input js-ak-search-input">
                                         <button class="search-button" draggable="false">
                                             @includeIf("layouts.icons.search_icon")
                                         </button>
-                                        @if(Request()->query("district_source") == "district" && Request()->query("district_search"))
+                                        @if(Request()->query("crop_source") == "crop" && Request()->query("crop_search"))
                                             <div class="reset-search js-ak-reset-search">
                                                 @includeIf("layouts.icons.reset_search_icon")
                                             </div>
@@ -34,9 +34,9 @@
                                     </div>
                                 </form>
                             </div>
-                            @can('add-District')
+                            @can('add-Crop')
                             <div class="right">
-                                <a href="{{route('district.create')}}" class="button primary-button add-new"
+                                <a href="{{route('crop.create')}}" class="button primary-button add-new"
                                    draggable="false">
                                     @includeIf("layouts.icons.add_new_icon")
                                     Add New
@@ -50,7 +50,7 @@
                             <thead>
                             <tr data-sort-method='thead'>
                                 <th class="table-id" data-sort-method="number">ID</th>
-                                   <th>State</th>   <th>District Name</th>   <th>District Code</th>   <th>Numeric Code</th>   <th>Effective Date</th>   <th>Is Active</th>
+                                   <th>Vertical</th>   <th>Crop Name</th>   <th>Crop Code</th>   <th>Numeric Code</th>   <th>Effective Date</th>   <th>Is Active</th>
                                 <th class="no-sort manage-th" data-orderable="false">
                                     <div class="manage-links">
 
@@ -59,24 +59,24 @@
                             </tr>
                             </thead>
                             <tbody class="">
-                                @foreach($district_list as $data)
+                                @foreach($crop_list as $data)
                                    <tr>
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{ $data->state->state_name ?? "" }}</td>
-<td>{{ $data->district_name }}</td>
-<td>{{ $data->district_code }}</td>
+                                        <td>{{ $data->vertical->vertical_name ?? "" }}</td>
+<td>{{ $data->crop_name }}</td>
+<td>{{ $data->crop_code }}</td>
 <td>{{ $data->numeric_code }}</td>
 <td>{{ $data->effective_date }}</td>
 <td>{{ $data->is_active }}</td>
 
                                          <td class="manage-td">
                                             <div class="manage-links">
-                                            @can('edit-District')
-                                                <a href="{{route('district.edit',$data->id)}}" class="edit-link"
+                                            @can('edit-Crop')
+                                                <a href="{{route('crop.edit',$data->id)}}" class="edit-link"
                                                    draggable="false">@includeIf("layouts.icons.edit_icon")</a>
                                             @endcan
-                                            @can('delete-District')
-                                                <a data-link="{{route('district.destroy',$data->id)}}"
+                                            @can('delete-Crop')
+                                                <a data-link="{{route('crop.destroy',$data->id)}}"
                                                    href="javascript:void(0);" data-id="{{$data->id}}"
                                                    class="delete-link js-ak-delete-link"
                                                    draggable="false">@includeIf("layouts.icons.delete_icon")</a>

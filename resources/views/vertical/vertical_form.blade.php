@@ -1,12 +1,12 @@
 @extends('layouts.app')
 @push('breadcrumb')
     <li class="breadcrumb-item">Form</li>
-    <li class="breadcrumb-item active"> District</li>
+    <li class="breadcrumb-item active"> Vertical</li>
 @endpush
 
 @push('page-back-button')
     <div class="page-back-button">
-        <a href="{{ route("district.index") }}">
+        <a href="{{ route("vertical.index") }}">
             <div class="icon">
                 <div class="font-awesome-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
@@ -19,18 +19,18 @@
     </div>
 @endpush
 @section('content')
-    <div class="form-container content-width-full district-form-content js-ak-delete-container">
-        <form method="POST" action="@isset($data->id){{route("district.update", $data->id)}}@else{{route("district.store")}}@endisset" enctype="multipart/form-data" class="form-page validate-form" novalidate>
+    <div class="form-container content-width-full vertical-form-content js-ak-delete-container">
+        <form method="POST" action="@isset($data->id){{route("vertical.update", $data->id)}}@else{{route("vertical.store")}}@endisset" enctype="multipart/form-data" class="form-page validate-form" novalidate>
             <div hidden>
                 @isset($data->id) @method('PUT') @endisset
                 @csrf
             </div>
              <div class="form-header">
                 <h3>{{ isset($data->id) ? 'Update' : 'Add New' }}</h3>
-                @can('delete-District')
+                @can('delete-Vertical')
                 <div class="form-delete-record">
                     @if(isset($data->id))
-                        <a href="#" data-link="{{route('district.destroy',$data->id)}}" data-id="{{$data->id}}" class="delete-link js-ak-delete-link" draggable="false">
+                        <a href="#" data-link="{{route('vertical.destroy',$data->id)}}" data-id="{{$data->id}}" class="delete-link js-ak-delete-link" draggable="false">
                             @includeIf("layouts.icons.delete_icon")
                         </a>
                     @endIf
@@ -39,34 +39,34 @@
             </div>
             @includeIf("layouts.errors")
             <div class="form-content">
-                    <div class="row-25">
+                    <div class="row-50">
         <div class="input-container">
             <div class="input-label">
-                <label for="state_id">State <span class="required">*</span></label>
+                <label for="vertical_name">Vertical Name <span class="required">*</span></label>
             </div>
             <div class="input-data">
-                <select name="state_id" id="state_id" class="form-select">
-                    <option value="">Select State</option>@foreach ($state_list as $list)
-                                        <option value="{{$list->id}}" {{ $data->state_id == $list->id ? "selected" : "" }}>{{ $list->state_name }}</option>
-                                     @endforeach
-                </select>
-                <div class="error-message @if ($errors->has('state_id')) show @endif">
+                <input type="text" class="form-input " id="vertical_name" autocomplete="off"
+                    name="vertical_name" placeholder="Vertical Name"
+                    value="{{ old('vertical_name', $data->vertical_name ?? '') }}"   />
+                <div class="error-message @if ($errors->has('vertical_name')) show @endif">
                     Required!</div>
-                <div class="text-muted" id="state_id_help"></div>
+                <div class="text-muted" id="vertical_name_help">
+                    
+                </div>
             </div>
         </div>
-    </div>    <div class="row-25">
+    </div>    <div class="row-50">
         <div class="input-container">
             <div class="input-label">
-                <label for="district_name">District Name <span class="required">*</span></label>
+                <label for="vertical_code">Vertical Code <span class="required">*</span></label>
             </div>
             <div class="input-data">
-                <input type="text" class="form-input " id="district_name" autocomplete="off"
-                    name="district_name" placeholder="District Name"
-                    value="{{ old('district_name', $data->district_name ?? '') }}"   />
-                <div class="error-message @if ($errors->has('district_name')) show @endif">
+                <input type="text" class="form-input " id="vertical_code" autocomplete="off"
+                    name="vertical_code" placeholder="Vertical Code"
+                    value="{{ old('vertical_code', $data->vertical_code ?? '') }}"   />
+                <div class="error-message @if ($errors->has('vertical_code')) show @endif">
                     Required!</div>
-                <div class="text-muted" id="district_name_help">
+                <div class="text-muted" id="vertical_code_help">
                     
                 </div>
             </div>
@@ -74,39 +74,7 @@
     </div>    <div class="row-25">
         <div class="input-container">
             <div class="input-label">
-                <label for="district_code">District Code </label>
-            </div>
-            <div class="input-data">
-                <input type="text" class="form-input " id="district_code" autocomplete="off"
-                    name="district_code" placeholder="District Code"
-                    value="{{ old('district_code', $data->district_code ?? '') }}"   />
-                <div class="error-message @if ($errors->has('district_code')) show @endif">
-                    Required!</div>
-                <div class="text-muted" id="district_code_help">
-                    
-                </div>
-            </div>
-        </div>
-    </div>    <div class="row-25">
-        <div class="input-container">
-            <div class="input-label">
-                <label for="numeric_code">Numeric Code <span class="required">*</span></label>
-            </div>
-            <div class="input-data">
-                <input type="text" class="form-input " id="numeric_code" autocomplete="off"
-                    name="numeric_code" placeholder="Numeric Code"
-                    value="{{ old('numeric_code', $data->numeric_code ?? '') }}"   />
-                <div class="error-message @if ($errors->has('numeric_code')) show @endif">
-                    Required!</div>
-                <div class="text-muted" id="numeric_code_help">
-                    
-                </div>
-            </div>
-        </div>
-    </div>    <div class="row-25">
-        <div class="input-container">
-            <div class="input-label">
-                <label for="effective_date">Effective Date </label>
+                <label for="effective_date">Effective Date <span class="required">*</span></label>
             </div>
             <div class="input-data">
                  <div class="group-input date-time-group" id="ak_date_group_effective_date">
@@ -127,7 +95,7 @@
     </div>    <div class="row-25">
         <div class="input-container">
             <div class="input-label">
-                <label for="is_active">Is Active </label>
+                <label for="is_active">Is Active <span class="required">*</span></label>
             </div>
             <div class="input-data">
              <div class="checkbox-input  form-switch">
@@ -141,7 +109,7 @@
         </div>
     </div>
             </div>
-            @includeIf("layouts.form_footer",["cancel_route"=>route("district.index")])
+            @includeIf("layouts.form_footer",["cancel_route"=>route("vertical.index")])
         </form>
 
     </div>

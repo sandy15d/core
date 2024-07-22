@@ -15,13 +15,17 @@ class District extends Model
     protected $table = 'district';
 
     
-    protected $fillable = ['state_id', 'district_name', 'district_code', 'effective_date', 'is_active', 'numeric_code'];
+    protected $fillable = ['state_id', 'district_name', 'district_code', 'effective_date', 'is_active'];
+
 
     protected $dates = ['created_at','updated_at','deleted_at'];
+
     
+
     public function state() {
     return $this->belongsTo("App\Models\State\State", "state_id");
-}
+    }
+
 
 
     public function scopeStartSorting($query, $request): void
@@ -36,12 +40,14 @@ class District extends Model
              $query->orderByDesc("id");
          }
     }
+
     public function scopeStartSearch($query, $search): void
     {
         if ($search) {
             $query->where("id","like","%".$search."%");
         }
     }
+    
     protected static function boot()
     {
         parent::boot();

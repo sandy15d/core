@@ -1,36 +1,36 @@
 <?php
 
-namespace App\Models\District;
+namespace App\Models\Crop;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\FileUploadTrait;
 use Illuminate\Support\Facades\Auth;
 
-class District extends Model
+class Crop extends Model
 {
     use SoftDeletes;
     use FileUploadTrait;
 
     
-    protected $table = 'district';
+    protected $table = 'crop';
 
     
-    protected $fillable = ['state_id', 'district_name', 'district_code', 'effective_date', 'is_active', 'numeric_code'];
+    protected $fillable = ['vertical_id', 'crop_name', 'crop_code', 'numeric_code', 'effective_date', 'is_active'];
 
     protected $dates = ['created_at','updated_at','deleted_at'];
     
-    public function state() {
-    return $this->belongsTo("App\Models\State\State", "state_id");
+    public function vertical() {
+    return $this->belongsTo("App\Models\Vertical\Vertical", "vertical_id");
 }
 
 
     public function scopeStartSorting($query, $request): void
     {
-        if ($request->has('district_sort_by') && $request->district_sort_by) {
-        if ($request->district_direction == "desc"){
-            $query->orderByDesc($request->district_sort_by);
+        if ($request->has('crop_sort_by') && $request->crop_sort_by) {
+        if ($request->crop_direction == "desc"){
+            $query->orderByDesc($request->crop_sort_by);
             } else {
-            $query->orderBy($request->district_sort_by);
+            $query->orderBy($request->crop_sort_by);
             }
         } else {
              $query->orderByDesc("id");

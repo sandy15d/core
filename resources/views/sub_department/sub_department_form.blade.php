@@ -1,12 +1,12 @@
 @extends('layouts.app')
 @push('breadcrumb')
     <li class="breadcrumb-item">Form</li>
-    <li class="breadcrumb-item active"> District</li>
+    <li class="breadcrumb-item active"> Sub Department</li>
 @endpush
 
 @push('page-back-button')
     <div class="page-back-button">
-        <a href="{{ route("district.index") }}">
+        <a href="{{ route("sub_department.index") }}">
             <div class="icon">
                 <div class="font-awesome-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
@@ -19,18 +19,18 @@
     </div>
 @endpush
 @section('content')
-    <div class="form-container content-width-full district-form-content js-ak-delete-container">
-        <form method="POST" action="@isset($data->id){{route("district.update", $data->id)}}@else{{route("district.store")}}@endisset" enctype="multipart/form-data" class="form-page validate-form" novalidate>
+    <div class="form-container content-width-full sub_department-form-content js-ak-delete-container">
+        <form method="POST" action="@isset($data->id){{route("sub_department.update", $data->id)}}@else{{route("sub_department.store")}}@endisset" enctype="multipart/form-data" class="form-page validate-form" novalidate>
             <div hidden>
                 @isset($data->id) @method('PUT') @endisset
                 @csrf
             </div>
              <div class="form-header">
                 <h3>{{ isset($data->id) ? 'Update' : 'Add New' }}</h3>
-                @can('delete-District')
+                @can('delete-SubDepartment')
                 <div class="form-delete-record">
                     @if(isset($data->id))
-                        <a href="#" data-link="{{route('district.destroy',$data->id)}}" data-id="{{$data->id}}" class="delete-link js-ak-delete-link" draggable="false">
+                        <a href="#" data-link="{{route('sub_department.destroy',$data->id)}}" data-id="{{$data->id}}" class="delete-link js-ak-delete-link" draggable="false">
                             @includeIf("layouts.icons.delete_icon")
                         </a>
                     @endIf
@@ -39,55 +39,39 @@
             </div>
             @includeIf("layouts.errors")
             <div class="form-content">
-                    <div class="row-25">
+                    <div class="row-33">
         <div class="input-container">
             <div class="input-label">
-                <label for="state_id">State <span class="required">*</span></label>
+                <label for="sub_department_name">Sub Department Name <span class="required">*</span></label>
             </div>
             <div class="input-data">
-                <select name="state_id" id="state_id" class="form-select">
-                    <option value="">Select State</option>@foreach ($state_list as $list)
-                                        <option value="{{$list->id}}" {{ $data->state_id == $list->id ? "selected" : "" }}>{{ $list->state_name }}</option>
-                                     @endforeach
-                </select>
-                <div class="error-message @if ($errors->has('state_id')) show @endif">
+                <input type="text" class="form-input " id="sub_department_name" autocomplete="off"
+                    name="sub_department_name" placeholder="Sub Department Name"
+                    value="{{ old('sub_department_name', $data->sub_department_name ?? '') }}"   />
+                <div class="error-message @if ($errors->has('sub_department_name')) show @endif">
                     Required!</div>
-                <div class="text-muted" id="state_id_help"></div>
-            </div>
-        </div>
-    </div>    <div class="row-25">
-        <div class="input-container">
-            <div class="input-label">
-                <label for="district_name">District Name <span class="required">*</span></label>
-            </div>
-            <div class="input-data">
-                <input type="text" class="form-input " id="district_name" autocomplete="off"
-                    name="district_name" placeholder="District Name"
-                    value="{{ old('district_name', $data->district_name ?? '') }}"   />
-                <div class="error-message @if ($errors->has('district_name')) show @endif">
-                    Required!</div>
-                <div class="text-muted" id="district_name_help">
+                <div class="text-muted" id="sub_department_name_help">
                     
                 </div>
             </div>
         </div>
-    </div>    <div class="row-25">
+    </div>    <div class="row-33">
         <div class="input-container">
             <div class="input-label">
-                <label for="district_code">District Code </label>
+                <label for="sub_department_code">Sub Department Code </label>
             </div>
             <div class="input-data">
-                <input type="text" class="form-input " id="district_code" autocomplete="off"
-                    name="district_code" placeholder="District Code"
-                    value="{{ old('district_code', $data->district_code ?? '') }}"   />
-                <div class="error-message @if ($errors->has('district_code')) show @endif">
+                <input type="text" class="form-input " id="sub_department_code" autocomplete="off"
+                    name="sub_department_code" placeholder="Sub Department Code"
+                    value="{{ old('sub_department_code', $data->sub_department_code ?? '') }}"   />
+                <div class="error-message @if ($errors->has('sub_department_code')) show @endif">
                     Required!</div>
-                <div class="text-muted" id="district_code_help">
+                <div class="text-muted" id="sub_department_code_help">
                     
                 </div>
             </div>
         </div>
-    </div>    <div class="row-25">
+    </div>    <div class="row-33">
         <div class="input-container">
             <div class="input-label">
                 <label for="numeric_code">Numeric Code <span class="required">*</span></label>
@@ -127,7 +111,7 @@
     </div>    <div class="row-25">
         <div class="input-container">
             <div class="input-label">
-                <label for="is_active">Is Active </label>
+                <label for="is_active">Is Active <span class="required">*</span></label>
             </div>
             <div class="input-data">
              <div class="checkbox-input  form-switch">
@@ -141,7 +125,7 @@
         </div>
     </div>
             </div>
-            @includeIf("layouts.form_footer",["cancel_route"=>route("district.index")])
+            @includeIf("layouts.form_footer",["cancel_route"=>route("sub_department.index")])
         </form>
 
     </div>

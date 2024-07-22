@@ -28,8 +28,7 @@ class DistrictController extends Controller
         $validator = Validator::make($request->all(), [
             'state_id' => 'required',
             'district_name' => 'required',
-            'district_code' => 'required',
-            'effective_date' => 'required',
+            'numeric_code' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -57,8 +56,7 @@ class DistrictController extends Controller
         $validator = Validator::make($request->all(), [
             'state_id' => 'required',
             'district_name' => 'required',
-            'district_code' => 'required',
-            'effective_date' => 'required',
+            'numeric_code' => 'required',
         ]);
 
         if ($validator->fails()) {
