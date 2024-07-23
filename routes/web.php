@@ -29,6 +29,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('menu-builder/show_menu', [\App\Http\Controllers\MenuController::class, 'show_menu'])->name('menu-builder.show_menu');
     Route::post('get_source_table_columns', [\App\Http\Controllers\PageBuilderController::class, 'getSourceTableColumns'])->name('get_source_table_columns');
 
+    Route::resource('project', \App\Http\Controllers\Project\ProjectController::class);
+
     //===================Role & Permission=======================
     Route::resource('role', \App\Http\Controllers\RoleController::class);
     Route::resource('permission', \App\Http\Controllers\PermissionController::class);
@@ -63,3 +65,4 @@ Route::resource('crop', \App\Http\Controllers\Crop\CropController::class);
 Route::resource('variety', \App\Http\Controllers\Variety\VarietyController::class);
 
 Route::resource('category', \App\Http\Controllers\Category\CategoryController::class);
+

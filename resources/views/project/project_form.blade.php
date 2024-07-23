@@ -1,12 +1,12 @@
 @extends('layouts.app')
 @push('breadcrumb')
     <li class="breadcrumb-item">Form</li>
-    <li class="breadcrumb-item active"> Country</li>
+    <li class="breadcrumb-item active"> project</li>
 @endpush
 
 @push('page-back-button')
     <div class="page-back-button">
-        <a href="{{ route("country.index") }}">
+        <a href="{{ route("project.index") }}">
             <div class="icon">
                 <div class="font-awesome-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
@@ -20,9 +20,9 @@
     </div>
 @endpush
 @section('content')
-    <div class="form-container content-width-full country-form-content js-ak-delete-container">
+    <div class="form-container content-width-full project-form-content js-ak-delete-container">
         <form method="POST"
-              action="@isset($data->id){{route("country.update", $data->id)}}@else{{route("country.store")}}@endisset"
+              action="@isset($data->id){{route("project.update", $data->id)}}@else{{route("project.store")}}@endisset"
               enctype="multipart/form-data" class="form-page validate-form" novalidate>
             <div hidden>
                 @isset($data->id)
@@ -32,10 +32,10 @@
             </div>
             <div class="form-header">
                 <h3>{{ isset($data->id) ? 'Update' : 'Add New' }}</h3>
-                @can('delete-Country')
+                @can('delete-Projects')
                     <div class="form-delete-record">
                         @if(isset($data->id))
-                            <a href="#" data-link="{{route('country.destroy',$data->id)}}" data-id="{{$data->id}}"
+                            <a href="#" data-link="{{route('project.destroy',$data->id)}}" data-id="{{$data->id}}"
                                class="delete-link js-ak-delete-link" draggable="false">
                                 @includeIf("layouts.icons.delete_icon")
                             </a>
@@ -48,36 +48,16 @@
                 <div class="row-33">
                     <div class="input-container">
                         <div class="input-label">
-                            <label for="global_region">Global Region <span class="required">*</span></label>
+                            <label for="project_name">Project Name <span class="required">*</span></label>
                         </div>
                         <div class="input-data">
-                            <select name="global_region" id="global_region" class="form-select">
-                                <option value="">Select Global Region</option>
-                                @foreach ($global_region_list as $list)
-                                    <option
-                                        value="{{$list->id}}" {{ $data->global_region == $list->id ? "selected" : "" }}>{{ $list->global_region_name }}</option>
-                                @endforeach
-                            </select>
-                            <div class="error-message @if ($errors->has('global_region')) show @endif">
+                            <input type="text" class="form-input " id="project_name" autocomplete="off"
+                                   name="project_name" placeholder="Project Name"
+                                   value="{{ old('project_name', $data->project_name ?? '') }}"/>
+                            <div class="error-message @if ($errors->has('project_name')) show @endif">
                                 Required!
                             </div>
-                            <div class="text-muted" id="global_region_help"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-33">
-                    <div class="input-container">
-                        <div class="input-label">
-                            <label for="country_name">Country Name <span class="required">*</span></label>
-                        </div>
-                        <div class="input-data">
-                            <input type="text" class="form-input " id="country_name" autocomplete="off"
-                                   name="country_name" placeholder="Country Name"
-                                   value="{{ old('country_name', $data->country_name ?? '') }}"/>
-                            <div class="error-message @if ($errors->has('country_name')) show @endif">
-                                Required!
-                            </div>
-                            <div class="text-muted" id="country_name_help">
+                            <div class="text-muted" id="project_name_help">
 
                             </div>
                         </div>
@@ -86,16 +66,16 @@
                 <div class="row-33">
                     <div class="input-container">
                         <div class="input-label">
-                            <label for="country_code">Country Code <span class="required">*</span></label>
+                            <label for="platform">Platform <span class="required">*</span></label>
                         </div>
                         <div class="input-data">
-                            <input type="text" class="form-input " id="country_code" autocomplete="off"
-                                   name="country_code" placeholder="Country Code"
-                                   value="{{ old('country_code', $data->country_code ?? '') }}"/>
-                            <div class="error-message @if ($errors->has('country_code')) show @endif">
+                            <input type="text" class="form-input " id="platform" autocomplete="off"
+                                   name="platform" placeholder="Platform"
+                                   value="{{ old('platform', $data->platform ?? '') }}"/>
+                            <div class="error-message @if ($errors->has('platform')) show @endif">
                                 Required!
                             </div>
-                            <div class="text-muted" id="country_code_help">
+                            <div class="text-muted" id="platform_help">
 
                             </div>
                         </div>
@@ -118,7 +98,7 @@
                     </div>
                 </div>
             </div>
-            @includeIf("layouts.form_footer",["cancel_route"=>route("country.index")])
+            @includeIf("layouts.form_footer",["cancel_route"=>route("project.index")])
         </form>
 
     </div>

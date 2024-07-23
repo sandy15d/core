@@ -35,6 +35,12 @@
                                 <div class="title">Page Builder</div>
                             </a>
                         </div>
+                        <div class="item {{ request()->routeIs('project.*') ? 'active' : '' }}">
+                            <a draggable="false" class="link" href="{{ route('project.index') }}">
+                                @includeIf("layouts.icons.page_icon")
+                                <div class="title">Project Builder</div>
+                            </a>
+                        </div>
                     @endcan
                     @can('menu-builder')
                         <div class="item {{ request()->routeIs('menu-builder.*') ? 'active' : '' }}">
