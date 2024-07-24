@@ -67,3 +67,6 @@ Route::resource('variety', \App\Http\Controllers\Variety\VarietyController::clas
 
 Route::resource('category', \App\Http\Controllers\Category\CategoryController::class);
 
+
+
+Route::resource('city_village', \App\Http\Controllers\CityVillage\CityVillageController::class);
