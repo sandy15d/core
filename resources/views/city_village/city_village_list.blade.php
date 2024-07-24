@@ -38,25 +38,37 @@
                     </div>
                     <div class="action">
                         <div class="left">
-                            <form class="search-container">
+                            <form class="search-container" method="GET" action="{{ url()->current() }}">
 
-                                <div class="search">
+                                <div>
                                     <input type="text" autocomplete="off" placeholder="Search"
-                                           name="search" id="search" class="form-input js-ak-search-input">
-                                    <button class="search-button" draggable="false" type="button"
-                                            onkeyup="getVillageList();">
+                                           name="search" id="search" class="form-input js-ak-search-input"
+                                           value="{{ request('search') }}">
+                                    <button class="search-button" draggable="false" >
                                         @includeIf("layouts.icons.search_icon")
                                     </button>
-                                    @if (isset($_REQUEST['search']) && $_REQUEST['search'] != '')
-                                        <script>
-                                            $('#search').val('<?= $_REQUEST['search'] ?>');
-                                        </script>
+                                    @if (request()->has('search') && request('search') != '')
                                         <div class="reset-search js-ak-reset-search">
                                             @includeIf("layouts.icons.reset_search_icon")
                                         </div>
                                     @endif
                                 </div>
+
                             </form>
+
+                            <!-- Move this script to the end of the file or a separate JS file -->
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const resetSearchButton = document.querySelector('.js-ak-reset-search');
+                                    if (resetSearchButton) {
+                                        resetSearchButton.addEventListener('click', function() {
+                                            document.getElementById('search').value = '';
+                                            document.querySelector('.search-container').submit();
+                                        });
+                                    }
+                                });
+                            </script>
+
                         </div>
                         @can('add-CityVillage')
                             <div class="right">
@@ -146,12 +158,4 @@
         @includeIf("layouts.delete_modal_confirm")
     </div>
 @endsection
-@push('bottom_script')
-    <script>
-        function getVillageList() {
-            var search = $('#search').val() || '';
-            window.location.href = "{{ route('city_village.index') }}?search=" + search;
-        }
 
-    </script>
-@endpush
