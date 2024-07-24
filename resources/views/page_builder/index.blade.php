@@ -69,18 +69,23 @@
                                 <td>
                                     {{$data->page_name}}
                                 </td>
-                                <td class="manage-td">
-                                    <div class="manage-links">
-                                        <a href="{{route("page-builder.edit", $data->id)}}" class="edit-link"
-                                           draggable="false">@includeIf("layouts.icons.edit_icon")</a>
-                                        <a data-link="{{route('page-builder.destroy',$data->id)}}"
-                                           href="javascript:void(0);" data-id="{{$data->id}}"
-                                           class="delete-link js-ak-delete-link"
-                                           draggable="false">@includeIf("layouts.icons.delete_icon")</a>
-                                        <a href="{{route("page-builder.page",['page'=> base64_encode($data->id)])}}" class="edit-link"
-                                           draggable="false">@includeIf("layouts.icons.page_generate")</a>
-                                    </div>
-                                </td>
+
+                                    <td class="manage-td">
+                                        @if($data->is_editable =='Y')
+                                        <div class="manage-links">
+                                            <a href="{{route("page-builder.edit", $data->id)}}" class="edit-link"
+                                               draggable="false">@includeIf("layouts.icons.edit_icon")</a>
+                                            <a data-link="{{route('page-builder.destroy',$data->id)}}"
+                                               href="javascript:void(0);" data-id="{{$data->id}}"
+                                               class="delete-link js-ak-delete-link"
+                                               draggable="false">@includeIf("layouts.icons.delete_icon")</a>
+                                            <a href="{{route("page-builder.page",['page'=> base64_encode($data->id)])}}"
+                                               class="edit-link"
+                                               draggable="false">@includeIf("layouts.icons.page_generate")</a>
+                                        </div>
+                                        @endif
+                                    </td>
+
                             </tr>
                         @empty
                         @endforelse
