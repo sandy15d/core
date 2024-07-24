@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Models\Block;
+namespace App\Models\CityVillage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\FileUploadTrait;
 use Illuminate\Support\Facades\Auth;
 
-class Block extends Model
+class CityVillage extends Model
 {
     use SoftDeletes;
     use FileUploadTrait;
 
     
-    protected $table = 'block';
+    protected $table = 'city_village';
 
     
-    protected $fillable = ['district_id', 'block_name', 'block_code', 'effective_date', 'is_active', 'numeric_code'];
+    protected $fillable = ['city_village_name', 'pincode', 'division_name', 'district_id', 'latitude', 'longitude', 'effective_date', 'is_active', 'state_id'];
 
     protected $dates = ['created_at','updated_at','deleted_at'];
     
@@ -23,14 +23,18 @@ class Block extends Model
     return $this->belongsTo("App\Models\District\District", "district_id");
 }
 
+public function state() {
+    return $this->belongsTo("App\Models\State\State", "state_id");
+}
+
 
     public function scopeStartSorting($query, $request): void
     {
-        if ($request->has('block_sort_by') && $request->block_sort_by) {
-        if ($request->block_direction == "desc"){
-            $query->orderByDesc($request->block_sort_by);
+        if ($request->has('city_village_sort_by') && $request->city_village_sort_by) {
+        if ($request->city_village_direction == "desc"){
+            $query->orderByDesc($request->city_village_sort_by);
             } else {
-            $query->orderBy($request->block_sort_by);
+            $query->orderBy($request->city_village_sort_by);
             }
         } else {
              $query->orderByDesc("id");

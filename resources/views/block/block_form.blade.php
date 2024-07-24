@@ -39,7 +39,7 @@
             </div>
             @includeIf("layouts.errors")
             <div class="form-content">
-                    <div class="row-33">
+                    <div class="row-25">
         <div class="input-container">
             <div class="input-label">
                 <label for="district_id">District <span class="required">*</span></label>
@@ -55,7 +55,7 @@
                 <div class="text-muted" id="district_id_help"></div>
             </div>
         </div>
-    </div>    <div class="row-33">
+    </div>    <div class="row-25">
         <div class="input-container">
             <div class="input-label">
                 <label for="block_name">Block Name <span class="required">*</span></label>
@@ -71,7 +71,7 @@
                 </div>
             </div>
         </div>
-    </div>    <div class="row-33">
+    </div>    <div class="row-25">
         <div class="input-container">
             <div class="input-label">
                 <label for="block_code">Block Code </label>
@@ -86,6 +86,37 @@
                     
                 </div>
             </div>
+        </div>
+    </div>    <div class="row-25">
+        <div class="input-container">
+            <div class="input-label">
+                <label for="numeric_code">Numeric Code </label>
+            </div>
+            <div class="input-data">
+                <input type="number" class="form-input " id="numeric_code" autocomplete="off"
+                    name="numeric_code" placeholder="Numeric Code"
+                    value="{{ old('numeric_code', $data->numeric_code ?? '') }}"   />
+                <div class="error-message @if ($errors->has('numeric_code')) show @endif">
+                    Required!</div>
+                <div class="text-muted" id="numeric_code_help">
+                    
+                </div>
+            </div>
+        </div>
+    </div>    <div class="row-25">
+        <div class="input-container">
+            <div class="input-label">
+                <label for="is_active">Is Active </label>
+            </div>
+            <div class="input-data">
+             <div class="checkbox-input  form-switch">
+                        <input type="hidden" name="is_active" value="0">
+                        <input class="form-checkbox" type="checkbox" id="is_active" name="is_active" value="1"
+                               @if(old("is_active") || ((isset($data->is_active)&&$data->is_active==1))) checked @endif >
+                        <label class="form-check-label" for="is_active"></label>
+             </div>
+              <div class="text-muted" id="is_active_help"></div>
+             </div>
         </div>
     </div>    <div class="row-25">
         <div class="input-container">
@@ -107,21 +138,6 @@
                 </div>
                 <div class="text-muted" id="effective_date_help"></div>
             </div>
-        </div>
-    </div>    <div class="row-25">
-        <div class="input-container">
-            <div class="input-label">
-                <label for="is_active">Is Active </label>
-            </div>
-            <div class="input-data">
-             <div class="checkbox-input  form-switch">
-                        <input type="hidden" name="is_active" value="0">
-                        <input class="form-checkbox" type="checkbox" id="is_active" name="is_active" value="1"
-                               @if(old("is_active") || ((isset($data->is_active)&&$data->is_active==1))) checked @endif >
-                        <label class="form-check-label" for="is_active"></label>
-             </div>
-              <div class="text-muted" id="is_active_help"></div>
-             </div>
         </div>
     </div>
             </div>
