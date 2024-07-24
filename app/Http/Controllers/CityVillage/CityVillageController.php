@@ -10,11 +10,31 @@ use Illuminate\Support\Facades\Validator;
 
 class CityVillageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $city_village_list = CityVillage::all();
+        // Retrieve the search term from the request
+        $search = $request->input('search');
+
+        // Initialize the query builder for CityVillage model
+        $data = CityVillage::query();
+
+        // Apply the search filter if the search term is not empty
+        if (!empty($search)) {
+            $data->where('city_village_name', 'like', '%' . $search . '%');
+        }
+
+        // Paginate the results with 10 items per page
+        $city_village_list = $data->paginate(10);
+
+        // Append the search term to the pagination links if it exists
+        if (!empty($search)) {
+            $city_village_list->appends(['search' => $search]);
+        }
+
+        // Return the view with the paginated list of city villages
         return view('city_village.city_village_list', compact('city_village_list'));
     }
+
 
     public function create()
     {
@@ -37,8 +57,8 @@ class CityVillageController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-      CityVillage::create($request->all()); 
-     return redirect()->route('city_village.index')->with('toast_success', 'CityVillage Created Successfully!');
+        CityVillage::create($request->all());
+        return redirect()->route('city_village.index')->with('toast_success', 'CityVillage Created Successfully!');
     }
 
     public function show($id)
@@ -68,7 +88,7 @@ class CityVillageController extends Controller
         }
 
         $city_village->update($request->all());
-     return redirect()->route('city_village.index')->with('toast_success', 'CityVillage Updated Successfully!');
+        return redirect()->route('city_village.index')->with('toast_success', 'CityVillage Updated Successfully!');
     }
 
     public function destroy(CityVillage $city_village)
