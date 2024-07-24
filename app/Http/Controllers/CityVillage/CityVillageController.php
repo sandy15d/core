@@ -20,7 +20,11 @@ class CityVillageController extends Controller
 
         // Apply the search filter if the search term is not empty
         if (!empty($search)) {
-            $data->where('city_village_name', 'like', '%' . $search . '%');
+            $data->where(function($query) use ($search) {
+                $query->where('city_village_name', 'like', '%' . $search . '%')
+                    ->orWhere('division_name', 'like', '%' . $search . '%')
+                    ->orWhere('pincode', 'like', '%' . $search . '%');
+            });
         }
 
         // Paginate the results with 10 items per page
