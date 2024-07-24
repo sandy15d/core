@@ -54,6 +54,33 @@
             line-height: 1rem;
             padding-bottom: .25rem;
         }
+
+        /* Ribbon CSS */
+        /* Smaller Ribbon CSS */
+        .ribbon {
+            width: 75px;
+            height: 75px;
+            overflow: hidden;
+            position: absolute;
+            top: -5px;
+            left: -5px;
+        }
+
+        .ribbon span {
+            position: absolute;
+            display: block;
+            width: 100px;
+            padding: 5px 0;
+            background-color: palevioletred;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            font: 700 12px/1 'Lato', sans-serif;
+            text-transform: uppercase;
+            text-align: center;
+            left: -20px;
+            top: 20px;
+            transform: rotate(-45deg);
+        }
     </style>
 @endpush
 @section('content')
@@ -65,9 +92,13 @@
             </a>
         </div>
 
-        @foreach($projects as $project)
-            <div class="ak-project-container">
+
+        <div class="ak-project-container">
+            @foreach($projects as $project)
                 <div class="ak-project-content">
+                    @if($project->is_active == 0)
+                        <div class="ribbon"><span>Deactive</span></div>
+                    @endif
                     <div class="settings">
                         <a draggable="false" class="" href="{{route('project.edit',$project->id)}}"><i
                                 class="fa-solid fa-sliders"></i></a>
@@ -82,8 +113,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
 
 
     </div>

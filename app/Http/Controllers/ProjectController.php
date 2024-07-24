@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Project;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Project\Project;
+use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -20,14 +18,14 @@ class ProjectController extends Controller
 
     public function create()
     {
-       $data = new Project();
+        $data = new Project();
         return view("project.project_form", compact('data'));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'project_name' => 'required',
+            'project_name' => 'required|unique:project',
             'platform' => 'required',
         ]);
 
@@ -53,20 +51,20 @@ class ProjectController extends Controller
         return view('project.project_form', compact('data'));
     }
 
-     public function update(Request $request, Project $project)
-     {
+    public function update(Request $request, Project $project)
+    {
 
-         $validator = Validator::make($request->all(), [
-             'project_name' => 'required',
-             'platform' => 'required',
-         ]);
+        $validator = Validator::make($request->all(), [
+            'project_name' => 'required|unique:project' . $project,
+            'platform' => 'required',
+        ]);
 
-         if ($validator->fails()) {
-             return redirect()->back()->withErrors($validator)->withInput();
-         }
-         $project->update($request->all());
-         return redirect()->route('project.index')->with('toast_success', 'Project Updated Successfully!');
-     }
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $project->update($request->all());
+        return redirect()->route('project.index')->with('toast_success', 'Project Updated Successfully!');
+    }
 
     public function destroy(Project $project)
     {

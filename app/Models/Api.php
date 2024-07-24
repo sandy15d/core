@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Models\Project;
+namespace App\Models;
 
-use App\Traits\FileUploadTrait;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class Project extends Model
+class Api extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'project';
-    protected $fillable = ['project_name', 'platform', 'project_key', 'is_active'];
+    protected $table = 'apis';
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     public function scopeStartSearch($query, $search): void
@@ -42,5 +41,10 @@ class Project extends Model
                 $model->save();
             }
         });
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }

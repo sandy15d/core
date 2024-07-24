@@ -26,13 +26,19 @@
                 </div>
             </div>
             <div
-                class="dropdown-container {{ request()->routeIs('page-builder.*') || request()->routeIs('menu-builder.*') ? 'show' : '' }}">
+                class="dropdown-container {{ request()->routeIs('page-builder.*') || request()->routeIs('menu-builder.*') || request()->routeIs('project.*') || request()->routeIs('api-builder.*')? 'show' : '' }}">
                 <div class="dropdown-menu-list">
                     @can('page-builder')
                         <div class="item {{ request()->routeIs('page-builder.*') ? 'active' : '' }}">
                             <a draggable="false" class="link" href="{{ route('page-builder.index') }}">
                                 @includeIf("layouts.icons.page_icon")
                                 <div class="title">Page Builder</div>
+                            </a>
+                        </div>
+                        <div class="item {{ request()->routeIs('api-builder.*') ? 'active' : '' }}">
+                            <a draggable="false" class="link" href="{{ route('api-builder.index') }}">
+                                @includeIf("layouts.icons.page_icon")
+                                <div class="title">API Builder</div>
                             </a>
                         </div>
                         <div class="item {{ request()->routeIs('project.*') ? 'active' : '' }}">

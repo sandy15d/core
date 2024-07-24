@@ -97,6 +97,20 @@
                         </div>
                     </div>
                 </div>
+
+                @if(isset($data->id))
+                    <div class="row-33">
+                        <div class="input-container">
+                            <div class="input-label">
+                                <label for="">Project Key:</label>
+                            </div>
+                            <div class="input-data">
+                                <input type="text" class="form-input" id="project_key" name="project_key" value="{{{ old('project_key', $data->project_key) }}}" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                @endIf
             </div>
             @includeIf("layouts.form_footer",["cancel_route"=>route("project.index")])
         </form>
