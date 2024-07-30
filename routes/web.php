@@ -70,3 +70,21 @@ Route::resource('category', \App\Http\Controllers\Category\CategoryController::c
 
 
 Route::resource('city_village', \App\Http\Controllers\CityVillage\CityVillageController::class);
+
+Route::resource('designation', \App\Http\Controllers\Designation\DesignationController::class);
+
+Route::resource('grade', \App\Http\Controllers\Grade\GradeController::class);
+
+Route::resource('business_unit', \App\Http\Controllers\BusinessUnit\BusinessUnitController::class);
+
+Route::resource('zone', \App\Http\Controllers\Zone\ZoneController::class);
+
+Route::resource('region', \App\Http\Controllers\Region\RegionController::class);
+
+Route::resource('territory', \App\Http\Controllers\Territory\TerritoryController::class);
+
+Route::resource('area', \App\Http\Controllers\Area\AreaController::class);
+
+Route::resource('level', \App\Http\Controllers\Level\LevelController::class);
+
+Route::resource('pack_size', \App\Http\Controllers\PackSize\PackSizeController::class);
