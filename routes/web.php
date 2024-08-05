@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Mapping\ZoneRegionMappingController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -29,8 +30,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('menu-builder/show_menu', [\App\Http\Controllers\MenuController::class, 'show_menu'])->name('menu-builder.show_menu');
     Route::post('get_source_table_columns', [\App\Http\Controllers\PageBuilderController::class, 'getSourceTableColumns'])->name('get_source_table_columns');
 
+    Route::resource('mapping-builder', \App\Http\Controllers\MappingBuilderController::class);
+    Route::get('mapping-builder.generate_page', [\App\Http\Controllers\MappingBuilderController::class, 'formGenerate'])->name('mapping-builder.generate_page');
+    Route::post('generate_mapping_builder', [\App\Http\Controllers\MappingBuilderController::class, 'generateMappingBuilder'])->name('generate_mapping_builder');
     Route::resource('project', \App\Http\Controllers\ProjectController::class);
-    Route::resource('api-builder',\App\Http\Controllers\ApiBuilderController::class);
+    Route::resource('api-builder', \App\Http\Controllers\ApiBuilderController::class);
 
     //===================Role & Permission=======================
     Route::resource('role', \App\Http\Controllers\RoleController::class);
@@ -66,8 +70,6 @@ Route::resource('crop', \App\Http\Controllers\Crop\CropController::class);
 Route::resource('variety', \App\Http\Controllers\Variety\VarietyController::class);
 
 Route::resource('category', \App\Http\Controllers\Category\CategoryController::class);
-
-
 
 Route::resource('city_village', \App\Http\Controllers\CityVillage\CityVillageController::class);
 
