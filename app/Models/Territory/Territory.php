@@ -15,15 +15,11 @@ class Territory extends Model
     protected $table = 'territory';
 
     
-    protected $fillable = ['territory_name', 'territory_code', 'numeric_code', 'effective_date', 'is_active', 'vertical_id'];
+    protected $fillable = ['territory_name', 'territory_code', 'numeric_code', 'effective_date', 'is_active'];
 
     protected $dates = ['created_at','updated_at','deleted_at'];
     
-    public function vertical() {
-    return $this->belongsTo("App\Models\Vertical\Vertical", "vertical_id");
-}
-
-
+    
     public function scopeStartSorting($query, $request): void
     {
         if ($request->has('territory_sort_by') && $request->territory_sort_by) {

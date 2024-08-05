@@ -50,7 +50,7 @@
                             <thead>
                             <tr data-sort-method='thead'>
                                 <th class="table-id" data-sort-method="number">ID</th>
-                                   <th>Vertical</th>   <th>Territory Name</th>   <th>Territory Code</th>   <th>Numeric Code</th>   <th>Effective Date</th>   <th>Is Active</th>
+                                   <th>Territory Name</th>   <th>Territory Code</th>   <th>Numeric Code</th>   <th>Effective Date</th>   <th>Is Active</th>
                                 <th class="no-sort manage-th" data-orderable="false">
                                     <div class="manage-links">
 
@@ -62,8 +62,7 @@
                                 @foreach($territory_list as $data)
                                    <tr>
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{ $data->vertical->vertical_name ?? "" }}</td>
-<td>{{ $data->territory_name }}</td>
+                                        <td>{{ $data->territory_name }}</td>
 <td>{{ $data->territory_code }}</td>
 <td>{{ $data->numeric_code }}</td>
 <td>{{ $data->effective_date }}</td>

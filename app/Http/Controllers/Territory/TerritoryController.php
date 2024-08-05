@@ -19,8 +19,7 @@ class TerritoryController extends Controller
     public function create()
     {
         $data = new Territory();
-        $vertical_list = DB::table('vertical')->get();
-        return view('territory.territory_form', compact('data', 'vertical_list'));
+        return view('territory.territory_form', compact('data'));
     }
 
     public function store(Request $request)
@@ -29,7 +28,6 @@ class TerritoryController extends Controller
             'territory_name' => 'required',
             'territory_code' => 'required',
             'effective_date' => 'required',
-            'vertical_id' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -48,8 +46,7 @@ class TerritoryController extends Controller
     public function edit($id)
     {
         $data = Territory::findOrFail($id);
-        $vertical_list = DB::table('vertical')->get();
-        return view('territory.territory_form', compact('data', 'vertical_list'));
+        return view('territory.territory_form', compact('data'));
     }
 
     public function update(Request $request, Territory $territory)
@@ -58,7 +55,6 @@ class TerritoryController extends Controller
             'territory_name' => 'required',
             'territory_code' => 'required',
             'effective_date' => 'required',
-            'vertical_id' => 'required',
         ]);
 
         if ($validator->fails()) {

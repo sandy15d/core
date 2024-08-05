@@ -42,22 +42,6 @@
                     <div class="row-33">
         <div class="input-container">
             <div class="input-label">
-                <label for="vertical_id">Vertical <span class="required">*</span></label>
-            </div>
-            <div class="input-data">
-                <select name="vertical_id" id="vertical_id" class="form-select js-ak-select2">
-                    <option value="">Select Vertical</option><br>@foreach ($vertical_list as $list)
-                                        <option value="{{$list->id}}" {{ $data->vertical_id == $list->id ? "selected" : "" }}>{{ $list->vertical_name }}</option>
-                                     @endforeach
-                </select>
-                <div class="error-message @if ($errors->has('vertical_id')) show @endif">
-                    Required!</div>
-               <div class="text-muted" id="vertical_id_help"></div>
-            </div>
-        </div>
-    </div>    <div class="row-33">
-        <div class="input-container">
-            <div class="input-label">
                 <label for="territory_name">Territory Name <span class="required">*</span></label>
             </div>
             <div class="input-data">
