@@ -14,7 +14,8 @@ class ReservedKeyword implements Rule
         'extends', 'final', 'finally', 'for', 'foreach', 'function', 'global', 'goto',
         'if', 'implements', 'interface', 'instanceof', 'insteadof', 'namespace', 'new',
         'or', 'private', 'protected', 'public', 'return', 'static', 'switch', 'throw',
-        'trait', 'try', 'use', 'var', 'while', 'xor', 'yield'
+        'trait', 'try', 'use', 'var', 'while', 'xor', 'yield','!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', ']', '{', '}', ';', ':', '"', "'", ',', '<', '>', '.', '/', '?', '\\', '|', '~', '`'
+
     ];
 
     public function passes($attribute, $value)
