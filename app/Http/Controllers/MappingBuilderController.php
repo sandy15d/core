@@ -5,13 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\FormBuilder;
 use App\Models\MappingBuilder;
 use App\Models\PageBuilder;
+use App\Models\User;
 use App\Rules\ReservedKeyword;
 use App\Traits\GenerateMappingControllerTrait;
 use App\Traits\GenerateViewForMappingTrait;
 use App\Traits\MappingDatabaseTrait;
 use App\Traits\MappingModelGenerateTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use App\Services\PermissionService;
+use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class MappingBuilderController extends Controller
 {
@@ -19,6 +27,13 @@ class MappingBuilderController extends Controller
     use MappingModelGenerateTrait;
     use GenerateMappingControllerTrait;
     use GenerateViewForMappingTrait;
+
+    protected $permissionService;
+
+    public function __construct(PermissionService $permissionService)
+    {
+        $this->permissionService = $permissionService;
+    }
 
     public function index()
     {
@@ -74,10 +89,78 @@ class MappingBuilderController extends Controller
 
     public function destroy(MappingBuilder $mappingBuilder)
     {
+        $table_name = $mappingBuilder->mapping_table_name;
+        $modelName = Str::studly(Str::singular($table_name));
+
+        // Delete permissions related to the model
+        $this->deletePermissions($modelName);
+
+        // Delete the mapping builder record
         $mappingBuilder->delete();
+
+        // Delete related files and directories
+        $this->deleteFile(app_path("Http/Controllers/Mapping/{$modelName}Controller.php"));
+        $this->deleteFile(app_path("Models/Mapping/{$modelName}.php"));
+        $this->deleteDirectory(resource_path("views/Mapping/{$modelName}"));
+
+        // Remove the route entries from web.php
+        $this->removeRouteEntries($modelName);
+
+        // Drop the database table if it exists
+        if (Schema::hasTable($table_name)) {
+            Schema::drop($table_name);
+        }
+
+        // Delete the menu entry
+        DB::table('menus')->where('permissions', $modelName)->delete();
 
         return redirect()->route('mapping-builder.index')->with('toast_success', 'Mapping Deleted Successfully!');
     }
+
+    /**
+     * Delete a file if it exists
+     *
+     * @param string $path
+     * @return void
+     */
+    private function deleteFile(string $path): void
+    {
+        if (File::exists($path)) {
+            File::delete($path);
+        }
+    }
+
+    /**
+     * Delete a directory if it exists
+     *
+     * @param string $directory
+     * @return void
+     */
+    private function deleteDirectory(string $directory): void
+    {
+        if (File::exists($directory)) {
+            File::deleteDirectory($directory);
+        }
+    }
+
+    /**
+     * Remove all route entries that contain the modelNameController from the web.php file
+     *
+     * @param string $modelName
+     * @return void
+     */
+    private function removeRouteEntries(string $modelName): void
+    {
+        $routeFilePath = base_path('routes/web.php');
+        $routeFileContent = file_get_contents($routeFilePath);
+
+        // Pattern to match any line containing the modelNameController
+        $pattern = "/.*{$modelName}Controller.*\n/";
+        $routeFileContent = preg_replace($pattern, '', $routeFileContent);
+
+        file_put_contents($routeFilePath, $routeFileContent);
+    }
+
 
     public function formGenerate(Request $request)
     {
@@ -130,4 +213,24 @@ class MappingBuilderController extends Controller
         return redirect()->route('mapping-builder.index')->with('toast_success', 'Mapping Generated Successfully!');
     }
 
+    function deletePermissions($permissionName)
+    {
+
+        $permission = Permission::findByName($permissionName);
+
+        // Remove the permission from all roles
+        $roles = Role::all();
+        foreach ($roles as $role) {
+            $role->revokePermissionTo($permissionName);
+        }
+
+        // Remove the permission from all users (or other models)
+        $users = User::permission($permissionName)->get();
+        foreach ($users as $user) {
+            $user->revokePermissionTo($permissionName);
+        }
+
+        // Delete the permission from the database
+        $permission->delete();
+    }
 }
