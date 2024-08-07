@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class Api extends Model
+class ApiBuilder extends Model
 {
-    use SoftDeletes;
 
-    protected $table = 'apis';
+    protected $table = 'api_builder';
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['route_name', 'model', 'parameters', 'predefined_conditions'];
+    protected $casts = [
+        'predefined_conditions' => 'array',  // Cast predefined_conditions to an array
+    ];
 
     public function scopeStartSearch($query, $search): void
     {
@@ -35,16 +38,13 @@ class Api extends Model
                 $model->updated_by = Auth::id();
             }
         });
-        static::deleting(function ($model) {
-            if (Auth::check() && !$model->isForceDeleting()) {
-                $model->deleted_by = Auth::id();
-                $model->save();
-            }
-        });
+
     }
 
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
+
+
 }

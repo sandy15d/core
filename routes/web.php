@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Mapping\ZoneRegionMappingController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -33,7 +32,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('mapping-builder', \App\Http\Controllers\MappingBuilderController::class);
     Route::get('mapping-builder.generate_page', [\App\Http\Controllers\MappingBuilderController::class, 'formGenerate'])->name('mapping-builder.generate_page');
     Route::post('generate_mapping_builder', [\App\Http\Controllers\MappingBuilderController::class, 'generateMappingBuilder'])->name('generate_mapping_builder');
+
+
     Route::resource('project', \App\Http\Controllers\ProjectController::class);
+
     Route::resource('api-builder', \App\Http\Controllers\ApiBuilderController::class);
 
     //===================Role & Permission=======================
@@ -90,3 +92,5 @@ Route::resource('area', \App\Http\Controllers\Area\AreaController::class);
 Route::resource('level', \App\Http\Controllers\Level\LevelController::class);
 
 Route::resource('pack_size', \App\Http\Controllers\PackSize\PackSizeController::class);
+
+Route::get('zone_te_mappings_list', [\App\Http\Controllers\Mapping\ZoneTeMappingController::class, 'zone_te_mappings_list'])->name('zone_te_mappings_list');
