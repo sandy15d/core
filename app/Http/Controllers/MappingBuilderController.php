@@ -56,6 +56,10 @@ class MappingBuilderController extends Controller
             'child' => 'required|max:200',
         ]);
         $data['mapping_table_name'] = \Str::snake($request->mapping_name) . "_mapping";
+        $data['parent_table_name'] = Str::snake($request->parent);
+        $data['child_table_name'] = Str::snake($request->child);
+        $data['parent_mapping_name'] = Str::snake($request->parent) . '_id';
+        $data['child_mapping_name'] = Str::snake($request->child) . '_id';
         MappingBuilder::create($data);
         return redirect(route("mapping-builder.index"))->with("toast_success", 'Mapping created successfully');
     }
@@ -69,6 +73,7 @@ class MappingBuilderController extends Controller
 
     public function update(Request $request, MappingBuilder $mappingBuilder)
     {
+
         $data = Validator::make($request->all(), [
             'mapping_name' => 'required|unique:mapping_builders,mapping_name,' . $mappingBuilder->id,
             'parent' => 'required|max:200',
@@ -81,6 +86,10 @@ class MappingBuilderController extends Controller
 
         $validatedData = $data->validated();
         $validatedData['mapping_table_name'] = \Str::snake($validatedData['mapping_name']) . "_mapping";
+        $validatedData['parent_table_name'] = Str::snake($request->parent);
+        $validatedData['child_table_name'] = Str::snake($request->child);
+        $validatedData['parent_mapping_name'] = Str::snake($request->parent) . '_id';
+        $validatedData['child_mapping_name'] = Str::snake($request->child) . '_id';
 
         $mappingBuilder->update($validatedData);
 
@@ -112,7 +121,13 @@ class MappingBuilderController extends Controller
         }
 
         // Delete the menu entry
-        DB::table('menus')->where('permissions', $modelName)->delete();
+
+        $menu = DB::table('menus')->where('permissions', $modelName);
+
+        if ($menu->exists()) {
+            $menu->delete();
+        }
+
 
         return redirect()->route('mapping-builder.index')->with('toast_success', 'Mapping Deleted Successfully!');
     }
@@ -195,12 +210,12 @@ class MappingBuilderController extends Controller
         //Create Database for Mapping
         $mapping_details = MappingBuilder::where('id', $mappingId)->first();
         $tableData['table_name'] = $mapping_details->mapping_table_name;
-        $tableData['parent_column_name'] = \Str::snake($mapping_details->parent) . "_id";
-        $tableData['parent_column'] = \Str::snake($mapping_details->parent_column);
-        $tableData['child_column_name'] = \Str::snake($mapping_details->child) . "_id";
-        $tableData['child_column'] = \Str::snake($mapping_details->child_column);
+        $tableData['parent_mapping_name'] = $mapping_details->parent_mapping_name;
+        $tableData['child_mapping_name'] = $mapping_details->child_mapping_name;
         $tableData['parent'] = $mapping_details->parent;
         $tableData['child'] = $mapping_details->child;
+        $tableData['parent_column'] = $mapping_details->parent_column;
+        $tableData['child_column'] = $mapping_details->child_column;
         $this->mappingDatabaseSetup($tableData);
         //Generate Model for Mapping
         $this->GenerateMappingModel($tableData);
@@ -215,22 +230,30 @@ class MappingBuilderController extends Controller
 
     function deletePermissions($permissionName)
     {
+        try {
+            // Attempt to find the permission by name for the 'web' guard
+            $permission = Permission::findByName($permissionName, 'web');
+        } catch (\Spatie\Permission\Exceptions\PermissionDoesNotExist $e) {
+            // Handle the case where the permission does not exist
+            // Log the error or return a specific response
+            // For example:
+            logger()->error("Permission '{$permissionName}' does not exist for guard 'web'.");
+            return; // Or throw an exception, or return a response
+        }
 
-        $permission = Permission::findByName($permissionName);
-
-        // Remove the permission from all roles
-        $roles = Role::all();
-        foreach ($roles as $role) {
+        // Revoke the permission from all roles
+        Role::all()->each(function ($role) use ($permissionName) {
             $role->revokePermissionTo($permissionName);
-        }
+        });
 
-        // Remove the permission from all users (or other models)
-        $users = User::permission($permissionName)->get();
-        foreach ($users as $user) {
+        // Revoke the permission from all users (or other models)
+        User::permission($permissionName)->get()->each(function ($user) use ($permissionName) {
             $user->revokePermissionTo($permissionName);
-        }
+        });
 
         // Delete the permission from the database
         $permission->delete();
     }
+
+
 }

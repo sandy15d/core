@@ -29,14 +29,14 @@ trait MappingModelGenerateTrait
     protected function getModelContent($modelName, $tableData)
     {
         // Extracting necessary data from $tableData array
-        $parent = $tableData['parent_column_name'];
-        $child = $tableData['child_column_name'];
+        $parent_id = $tableData['parent_mapping_name'];
+        $child_id = $tableData['child_mapping_name'];
         $table = $tableData['table_name'];
         $parentModelName = Str::studly($tableData['parent']);
         $childModelName = Str::studly($tableData['child']);
 
         // Preparing the fillable array
-        $fillable = "['$parent', '$child']";
+        $fillable = "['$parent_id', '$child_id']";
 
         // Preparing the model's relationship method names
         $parentModelMethod = Str::camel($parentModelName);
@@ -65,7 +65,7 @@ class $modelName extends Model
      */
     public function $parentModelMethod(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return \$this->belongsTo("App\\Models\\$parentModelName\\$parentModelName", '$parent', 'id');
+        return \$this->belongsTo("App\\Models\\$parentModelName\\$parentModelName", '$parent_id', 'id');
     }
 
     /**
@@ -73,7 +73,7 @@ class $modelName extends Model
      */
     public function $childModelMethod(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return \$this->belongsTo("App\\Models\\$childModelName\\$childModelName", '$child', 'id');
+        return \$this->belongsTo("App\\Models\\$childModelName\\$childModelName", '$child_id', 'id');
     }
 
     /**

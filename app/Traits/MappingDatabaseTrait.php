@@ -12,8 +12,8 @@ trait MappingDatabaseTrait
         if (!\Schema::hasTable($tableData['table_name'])) {
             Schema::create($tableData['table_name'], function (Blueprint $table) use ($tableData) {
                 $table->id();
-                $table->integer($tableData['parent_column_name']);
-                $table->integer($tableData['child_column_name']);
+                $table->integer($tableData['parent_mapping_name']);
+                $table->integer($tableData['child_mapping_name']);
                 $table->date('effective_from')->nullable();
                 $table->date('effective_to')->nullable();
                 $table->timestamps();

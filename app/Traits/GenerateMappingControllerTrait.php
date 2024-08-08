@@ -35,15 +35,19 @@ trait GenerateMappingControllerTrait
     {
         $parentModel = Str::studly($tableData['parent']);
         $childModel = Str::studly($tableData['child']);
+
         $parentColumnName = $tableData['parent_column'];
         $childColumnNames = explode(',', $tableData['child_column']);
         // Prepare child columns selection string
         $childColumnSelect = implode("', '", array_map('trim', $childColumnNames));
         $storeMapping = Str::snake(Str::pluralStudly($tableData['table_name'])) . '_data';
         $mappingList = Str::snake(Str::pluralStudly($tableData['table_name'])) . '_list';
-        $parent_id = Str::lower(Str::studly($tableData['parent'])) . '_id';
-        $child_id = Str::lower(Str::studly($tableData['child'])) . '_ids';
-        $child_id_singular = Str::lower(Str::studly($tableData['child'])) . '_id';
+
+        $parent_id = $tableData['parent_mapping_name'];
+        $child_id_plural = Str::plural($tableData['child_mapping_name']);
+        $child_id_singular = $tableData['child_mapping_name'];
+
+
         return <<<EOT
     <?php
 
@@ -68,28 +72,28 @@ trait GenerateMappingControllerTrait
         }
 
         public function $storeMapping(Request \$request){
-            \$effective_from =Carbon::parse(\$request->effective_from);
+            \$effective_from = Carbon::parse(\$request->effective_from);
             \$$parent_id = \$request->$parent_id;
-            \$$child_id = \$request->$child_id;
+            \$$child_id_plural = \$request->$child_id_plural;
             \$currentTimestamp = Carbon::now();
             \$userId = Auth::user()->id;
             // Prepare the data for batch insert
         \$insertData = array_map(function(\$$child_id_singular) use ( \$$parent_id, \$effective_from, \$userId, \$currentTimestamp) {
             return [
-                'zone_id' =>  \$$parent_id,
-                'region_id' => \$$child_id_singular,
+                '$parent_id' =>  \$$parent_id,
+                '$child_id_singular' => \$$child_id_singular,
                 'effective_from' => \$effective_from,
                 'created_by' => \$userId,
                 'created_at' => \$currentTimestamp,
             ];
-        }, \$$child_id);
+        }, \$$child_id_plural);
 
         try {
             // Use a transaction to ensure data integrity
-            DB::transaction(function() use (\$$parent_id, \$$child_id, \$effective_from, \$insertData) {
-                foreach (\$$child_id as \$$child_id_singular) {
-                    // Find any existing mapping with the same zone_id and region_id
-                    \$existingMapping = $modelName::where('region_id', \$$child_id_singular)
+            DB::transaction(function() use (\$$parent_id, \$$child_id_plural, \$effective_from, \$insertData) {
+                foreach (\$$child_id_plural as \$$child_id_singular) {
+                    // Find any existing mapping with the same $parent_id and $child_id_singular
+                    \$existingMapping = $modelName::where('$child_id_singular', \$$child_id_singular)
                         ->whereNull('effective_to')
                         ->orderBy('effective_from', 'desc')
                         ->first();

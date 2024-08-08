@@ -8,11 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class MappingBuilder extends Model
 {
-    use SoftDeletes;
 
     protected $table = 'mapping_builders';
     public $timestamps = false;
-    protected $fillable = ['mapping_name','mapping_table_name', 'parent', 'child','mapping_type','parent_column','child_column'];
+    protected $fillable = ['mapping_name', 'mapping_table_name', 'parent', 'child', 'parent_table_name', 'child_table_name', 'mapping_type', 'parent_column', 'child_column', 'parent_mapping_name', 'child_mapping_name'];
 
 
     public function scopeStartSorting($query, $request): void
@@ -49,12 +48,7 @@ class MappingBuilder extends Model
                 $model->updated_by = Auth::id();
             }
         });
-        static::deleting(function ($model) {
-            if (Auth::check() && !$model->isForceDeleting()) {
-                $model->deleted_by = Auth::id();
-                $model->save();
-            }
-        });
+
     }
 
 }
