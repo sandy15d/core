@@ -74,7 +74,8 @@ trait GenerateViewForMappingTrait
 
         $tableBody = '';
         foreach ($childColumnNames as $childColumnName) {
-            $chk = FormBuilder::where('page_name', $child)->where('column_name', $childColumnName)->first();
+            $chk = FormBuilder::where('page_name', $tableData['child'])->where('column_name', $childColumnName)->first();
+
             if ($chk->source_table != null && $chk->source_table_column_value != null) {
                 $relation_table = Str::lower($this->get_studly_case($chk->source_table));
                 $tableBody .= '<td>{{ $data->' . $relation_table . '->' . $chk->source_table_column_value . ' ?? "" }}</td>' . "\n";
