@@ -176,7 +176,6 @@ class MappingBuilderController extends Controller
         file_put_contents($routeFilePath, $routeFileContent);
     }
 
-
     public function formGenerate(Request $request)
     {
         $page_id = base64_decode($request->page);
