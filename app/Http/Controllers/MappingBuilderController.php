@@ -185,7 +185,7 @@ class MappingBuilderController extends Controller
         $child_table = MappingBuilder::where('id', $page_id)->value('child');
         $parent_table_columns = FormBuilder::where('page_name', $parent_table)->select('column_name', 'column_title')->get();
         $child_table_columns = FormBuilder::where('page_name', $child_table)->select('column_name', 'column_title')->get();
-        $data = MappingBuilder::find($page_id)->first();
+        $data = MappingBuilder::find($page_id);
         return view('mapping_builder.mapping_generate_form', compact('page', 'page_id', 'parent_table_columns', 'child_table_columns', 'data'));
     }
 
