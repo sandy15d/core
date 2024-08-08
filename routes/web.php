@@ -94,3 +94,12 @@ Route::resource('level', \App\Http\Controllers\Level\LevelController::class);
 Route::resource('pack_size', \App\Http\Controllers\PackSize\PackSizeController::class);
 
 Route::get('zone_te_mappings_list', [\App\Http\Controllers\Mapping\ZoneTeMappingController::class, 'zone_te_mappings_list'])->name('zone_te_mappings_list');
+Route::resource('zone_region_mappings', \App\Http\Controllers\Mapping\ZoneRegionMappingController::class);
+Route::post('zone_region_mappings_data', [\App\Http\Controllers\Mapping\ZoneRegionMappingController::class, 'zone_region_mappings_data'])->name('zone_region_mappings_data');
+Route::get('zone_region_mappings_list', [\App\Http\Controllers\Mapping\ZoneRegionMappingController::class, 'zone_region_mappings_list'])->name('zone_region_mappings_list');
+Route::resource('dept_sub_dept_mappings', \App\Http\Controllers\Mapping\DeptSubDeptMappingController::class);
+Route::post('dept_sub_dept_mappings_data', [\App\Http\Controllers\Mapping\DeptSubDeptMappingController::class, 'dept_sub_dept_mappings_data'])->name('dept_sub_dept_mappings_data');
+Route::get('dept_sub_dept_mappings_list', [\App\Http\Controllers\Mapping\DeptSubDeptMappingController::class, 'dept_sub_dept_mappings_list'])->name('dept_sub_dept_mappings_list');
+Route::resource('sub_dept_section_mappings', \App\Http\Controllers\Mapping\SubDeptSectionMappingController::class);
+Route::post('sub_dept_section_mappings_data', [\App\Http\Controllers\Mapping\SubDeptSectionMappingController::class, 'sub_dept_section_mappings_data'])->name('sub_dept_section_mappings_data');
+Route::get('sub_dept_section_mappings_list', [\App\Http\Controllers\Mapping\SubDeptSectionMappingController::class, 'sub_dept_section_mappings_list'])->name('sub_dept_section_mappings_list');
