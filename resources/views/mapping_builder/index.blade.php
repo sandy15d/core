@@ -55,6 +55,7 @@
                             <th>Mapping Name</th>
                             <th>Parent</th>
                             <th>Child</th>
+                            <th>Relationship Type</th>
                             <th class="no-sort manage-th" data-orderable="false">
 
                             </th>
@@ -74,6 +75,9 @@
                                 </td>
                                 <td>
                                     {{$data->child}}
+                                </td>
+                                <td>
+                                    {{$data->relationship_type}}
                                 </td>
 
                                 <td class="manage-td">
