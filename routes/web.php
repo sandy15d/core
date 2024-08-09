@@ -103,3 +103,7 @@ Route::get('dept_sub_dept_mappings_list', [\App\Http\Controllers\Mapping\DeptSub
 Route::resource('sub_dept_section_mappings', \App\Http\Controllers\Mapping\SubDeptSectionMappingController::class);
 Route::post('sub_dept_section_mappings_data', [\App\Http\Controllers\Mapping\SubDeptSectionMappingController::class, 'sub_dept_section_mappings_data'])->name('sub_dept_section_mappings_data');
 Route::get('sub_dept_section_mappings_list', [\App\Http\Controllers\Mapping\SubDeptSectionMappingController::class, 'sub_dept_section_mappings_list'])->name('sub_dept_section_mappings_list');
+Route::resource('function_vertical_mappings', \App\Http\Controllers\Mapping\FunctionVerticalMappingController::class);
+Route::post('function_vertical_mappings_data', [\App\Http\Controllers\Mapping\FunctionVerticalMappingController::class, 'function_vertical_mappings_data'])->name('function_vertical_mappings_data');
+Route::get('function_vertical_mappings_list', [\App\Http\Controllers\Mapping\FunctionVerticalMappingController::class, 'function_vertical_mappings_list'])->name('function_vertical_mappings_list');
+Route::get('vertical_department_mappings_list', [\App\Http\Controllers\Mapping\VerticalDepartmentMappingController::class, 'vertical_department_mappings_list'])->name('vertical_department_mappings_list');
