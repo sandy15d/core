@@ -11,7 +11,7 @@ class MappingBuilder extends Model
 
     protected $table = 'mapping_builders';
     public $timestamps = false;
-    protected $fillable = ['mapping_name', 'mapping_table_name', 'parent', 'child', 'parent_table_name', 'child_table_name', 'mapping_type', 'parent_column', 'child_column', 'parent_mapping_name', 'child_mapping_name'];
+    protected $fillable = ['mapping_name', 'mapping_table_name', 'parent', 'child', 'parent_table_name', 'child_table_name', 'mapping_type', 'parent_column', 'child_column', 'parent_mapping_name', 'child_mapping_name','relationship_type'];
 
 
     public function scopeStartSorting($query, $request): void

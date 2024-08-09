@@ -10,7 +10,7 @@
                 <div class="font-awesome-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
                         <path
-                                d="M192 448c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l137.4 137.4c12.5 12.5 12.5 32.75 0 45.25C208.4 444.9 200.2 448 192 448z"/>
+                            d="M192 448c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l137.4 137.4c12.5 12.5 12.5 32.75 0 45.25C208.4 444.9 200.2 448 192 448z"/>
                     </svg>
                 </div>
             </div>
@@ -101,7 +101,8 @@
                             <select name="parent_column" id="parent_column" class="form-select">
                                 <option value="">Select Column</option>
                                 @foreach($parent_table_columns as $list)
-                                    <option value="{{$list->column_name}}" {{$data->parent_column == $list->column_name ?'selected':''}}>{{$list->column_title}}</option>
+                                    <option
+                                        value="{{$list->column_name}}" {{$data->parent_column == $list->column_name ?'selected':''}}>{{$list->column_title}}</option>
                                 @endforeach
                             </select>
                             <div class="error-message @if ($errors->has('parent_column')) show @endif">
@@ -117,13 +118,15 @@
                             <label for="child_column">Child Table Column <span class="required">*</span></label>
                         </div>
                         <div class="input-data">
-                            <select name="child_column[]" id="child_column" class="form-select js-ak-select2-many" multiple>
+                            <select name="child_column[]" id="child_column" class="form-select js-ak-select2-many"
+                                    multiple>
                                 <option value="">Select Column</option>
                                 @php
                                     $selectedColumns = explode(',', $data->child_column);
                                 @endphp
                                 @foreach($child_table_columns as $list)
-                                    <option value="{{$list->column_name}}" {{ in_array($list->column_name, $selectedColumns) ? 'selected' : '' }}>
+                                    <option
+                                        value="{{$list->column_name}}" {{ in_array($list->column_name, $selectedColumns) ? 'selected' : '' }}>
                                         {{$list->column_title}}
                                     </option>
                                 @endforeach
@@ -141,7 +144,7 @@
                     <div class="row">
                         <div class='col  col-md-2 text-center'>
                             <input type="radio" name="mapping_type" id="img1" class="d-none imgbgchk"
-                                   value="1" {{$data->mapping_type == 1 ?'checked':''}}>
+                                   value="1" {{$data->mapping_type == 1 ?'checked':''}} checked>
                             <label for="img1">
                                 <img src="{{URL::to('/')}}/assets/images/type_one.jpg" alt="Image 1">
                                 <div class="tick_container">
@@ -149,15 +152,15 @@
                                 </div>
                             </label>
                         </div>
-                        <div class='col col-md-2 text-center'>
-                            <input type="radio" name="mapping_type" id="img2" class="d-none imgbgchk" value="2" {{$data->mapping_type == 2 ?'checked':''}}>
-                            <label for="img2">
-                                <img src="{{URL::to('/')}}/assets/images/type_two.jpg" alt="Image 2">
-                                <div class="tick_container">
-                                    <div class="tick"><i class="fa fa-check"></i></div>
-                                </div>
-                            </label>
-                        </div>
+                        {{-- <div class='col col-md-2 text-center'>
+                             <input type="radio" name="mapping_type" id="img2" class="d-none imgbgchk" value="2" {{$data->mapping_type == 2 ?'checked':''}}>
+                             <label for="img2">
+                                 <img src="{{URL::to('/')}}/assets/images/type_two.jpg" alt="Image 2">
+                                 <div class="tick_container">
+                                     <div class="tick"><i class="fa fa-check"></i></div>
+                                 </div>
+                             </label>
+                         </div>--}}
 
                     </div>
 

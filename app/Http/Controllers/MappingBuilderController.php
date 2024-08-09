@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FormBuilder;
 use App\Models\MappingBuilder;
 use App\Models\PageBuilder;
+use App\Models\FormBuilder;
 use App\Models\User;
 use App\Rules\ReservedKeyword;
 use App\Traits\GenerateMappingControllerTrait;
@@ -15,11 +15,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Validator;
-use App\Services\PermissionService;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Services\PermissionService;
 
 class MappingBuilderController extends Controller
 {
@@ -43,53 +43,32 @@ class MappingBuilderController extends Controller
 
     public function create()
     {
-        $table_list = PageBuilder::pluck('snake_case', 'page_name')->toArray();
+        $table_list = $this->getTableList();
         $data = new MappingBuilder();
         return view('mapping_builder.mapping_create', compact('table_list', 'data'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'mapping_name' => ['required', 'unique:mapping_builders', 'max:255', new ReservedKeyword],
-            'parent' => 'required|max:200',
-            'child' => 'required|max:200',
-        ]);
-        $data['mapping_table_name'] = \Str::snake($request->mapping_name) . "_mapping";
-        $data['parent_table_name'] = Str::snake($request->parent);
-        $data['child_table_name'] = Str::snake($request->child);
-        $data['parent_mapping_name'] = Str::snake($request->parent) . '_id';
-        $data['child_mapping_name'] = Str::snake($request->child) . '_id';
+        $data = $this->validateMappingRequest($request);
+        $data = $this->generateMappingAttributes($data, $request);
+
         MappingBuilder::create($data);
-        return redirect(route("mapping-builder.index"))->with("toast_success", 'Mapping created successfully');
+
+        return redirect(route('mapping-builder.index'))->with('toast_success', 'Mapping created successfully');
     }
 
     public function edit(MappingBuilder $mappingBuilder)
     {
+        $table_list = $this->getTableList();
         $data = $mappingBuilder;
-        $table_list = PageBuilder::pluck('snake_case', 'page_name')->toArray();
         return view('mapping_builder.mapping_create', compact('data', 'table_list'));
     }
 
     public function update(Request $request, MappingBuilder $mappingBuilder)
     {
-
-        $data = Validator::make($request->all(), [
-            'mapping_name' => 'required|unique:mapping_builders,mapping_name,' . $mappingBuilder->id,
-            'parent' => 'required|max:200',
-            'child' => 'required|max:200',
-        ]);
-
-        if ($data->fails()) {
-            return redirect()->back()->withErrors($data)->withInput();
-        }
-
-        $validatedData = $data->validated();
-        $validatedData['mapping_table_name'] = \Str::snake($validatedData['mapping_name']) . "_mapping";
-        $validatedData['parent_table_name'] = Str::snake($request->parent);
-        $validatedData['child_table_name'] = Str::snake($request->child);
-        $validatedData['parent_mapping_name'] = Str::snake($request->parent) . '_id';
-        $validatedData['child_mapping_name'] = Str::snake($request->child) . '_id';
+        $data = $this->validateMappingRequest($request, $mappingBuilder->id);
+        $validatedData = $this->generateMappingAttributes($data, $request);
 
         $mappingBuilder->update($validatedData);
 
@@ -98,46 +77,153 @@ class MappingBuilderController extends Controller
 
     public function destroy(MappingBuilder $mappingBuilder)
     {
-        $table_name = $mappingBuilder->mapping_table_name;
-        $modelName = Str::studly(Str::singular($table_name));
-
-        // Delete permissions related to the model
-        $this->deletePermissions($modelName);
-
-        // Delete the mapping builder record
-        $mappingBuilder->delete();
-
-        // Delete related files and directories
-        $this->deleteFile(app_path("Http/Controllers/Mapping/{$modelName}Controller.php"));
-        $this->deleteFile(app_path("Models/Mapping/{$modelName}.php"));
-        $this->deleteDirectory(resource_path("views/Mapping/{$modelName}"));
-
-        // Remove the route entries from web.php
-        $this->removeRouteEntries($modelName);
-
-        // Drop the database table if it exists
-        if (Schema::hasTable($table_name)) {
-            Schema::drop($table_name);
-        }
-
-        // Delete the menu entry
-
-        $menu = DB::table('menus')->where('permissions', $modelName);
-
-        if ($menu->exists()) {
-            $menu->delete();
-        }
-
+        $this->deleteMappingResources($mappingBuilder);
 
         return redirect()->route('mapping-builder.index')->with('toast_success', 'Mapping Deleted Successfully!');
     }
 
-    /**
-     * Delete a file if it exists
-     *
-     * @param string $path
-     * @return void
-     */
+    public function formGenerate(Request $request)
+    {
+        $page_id = base64_decode($request->page);
+        $page = MappingBuilder::findOrFail($page_id)->toArray();
+        $parent_table_columns = $this->getFormBuilderColumns($page['parent']);
+        $child_table_columns = $this->getFormBuilderColumns($page['child']);
+        $data = MappingBuilder::find($page_id);
+
+        return view('mapping_builder.mapping_generate_form', compact('page', 'page_id', 'parent_table_columns', 'child_table_columns', 'data'));
+    }
+
+    public function generateMappingBuilder(Request $request)
+    {
+        $data = $this->validateGenerateMappingRequest($request);
+        $this->updateMappingForm($data);
+        $this->performMappingGeneration($data);
+        return redirect()->route('mapping-builder.index')->with('toast_success', 'Mapping Generated Successfully!');
+    }
+
+    private function getTableList()
+    {
+        $tableList1 = PageBuilder::pluck('snake_case', 'page_name')->toArray();
+        $tableList2 = MappingBuilder::pluck('mapping_table_name', 'mapping_name')->toArray();
+        return array_merge($tableList1, $tableList2);
+    }
+
+    private function validateMappingRequest(Request $request, $ignoreId = null)
+    {
+        $rules = [
+            'mapping_name' => ['required', 'max:255', new ReservedKeyword()],
+            'parent' => 'required|max:200',
+            'child' => 'required|max:200',
+            'relationship_type' => 'required|max:200',
+        ];
+
+        if ($ignoreId) {
+            $rules['mapping_name'] = ['required', 'unique:mapping_builders,mapping_name,' . $ignoreId, 'max:255', new ReservedKeyword()];
+        }
+
+        return $request->validate($rules);
+    }
+
+    private function generateMappingAttributes(array $data, Request $request)
+    {
+        $data['mapping_table_name'] = \Str::snake($data['mapping_name']) . "_mapping";
+        $data['parent_table_name'] = Str::snake($request->parent);
+        $data['child_table_name'] = Str::snake($request->child);
+        $data['parent_mapping_name'] = Str::snake($request->parent) . '_id';
+        $data['child_mapping_name'] = Str::snake($request->child) . '_id';
+        $data['relationship_type'] = $request->relationship_type;
+        return $data;
+    }
+
+    private function validateGenerateMappingRequest(Request $request)
+    {
+        return $request->validate([
+            'parent_column' => 'required|string',
+            'child_column' => 'required|array',
+            'mapping_type' => 'required|string',
+            'mapping_id' => 'required|exists:mapping_builders,id',
+        ]);
+    }
+
+    private function updateMappingForm(array $data)
+    {
+        $mappingId = $data['mapping_id'];
+        unset($data['mapping_id']); // Remove mapping_id from data array to avoid updating it
+        $data['child_column'] = implode(',', $data['child_column']);
+        MappingBuilder::where('id', $mappingId)->update($data);
+    }
+    private function performMappingGeneration(array $data)
+    {
+        $mappingDetails = MappingBuilder::findOrFail($data['mapping_id']);
+
+        $tableData = [
+            'table_name' => $mappingDetails->mapping_table_name,
+            'parent_mapping_name' => $mappingDetails->parent_mapping_name,
+            'child_mapping_name' => $mappingDetails->child_mapping_name,
+            'parent' => $mappingDetails->parent,
+            'child' => $mappingDetails->child,
+            'parent_column' => $data['parent_column'],
+            'child_column' => implode(',', $data['child_column']),
+            'relationship_type' => $mappingDetails->relationship_type,
+        ];
+
+        $this->mappingDatabaseSetup($tableData);
+        $this->generateMappingModel($tableData);
+        $this->generateMappingController($tableData);
+        $this->generateMappingRoutes($tableData);
+        $this->generateIndexView($tableData);
+        $this->generateListView($tableData);
+    }
+
+    private function deleteMappingResources(MappingBuilder $mappingBuilder)
+    {
+        $tableName = $mappingBuilder->mapping_table_name;
+        $modelName = Str::studly(Str::singular($tableName));
+
+        $this->deletePermissions($modelName);
+
+        $mappingBuilder->delete();
+
+        $this->deleteFile(app_path("Http/Controllers/Mapping/{$modelName}Controller.php"));
+        $this->deleteFile(app_path("Models/Mapping/{$modelName}.php"));
+        $this->deleteDirectory(resource_path("views/Mapping/{$modelName}"));
+        $this->removeRouteEntries($modelName);
+
+        if (Schema::hasTable($tableName)) {
+            Schema::drop($tableName);
+        }
+
+        $menu = DB::table('menus')->where('permissions', $modelName);
+        if ($menu->exists()) {
+            $menu->delete();
+        }
+    }
+
+    private function getFormBuilderColumns($tableName)
+    {
+        return FormBuilder::where('page_name', $tableName)->select('column_name', 'column_title')->get();
+    }
+
+    private function deletePermissions($permissionName)
+    {
+        try {
+            $permission = Permission::findByName($permissionName, 'web');
+        } catch (\Spatie\Permission\Exceptions\PermissionDoesNotExist $e) {
+            logger()->error("Permission '{$permissionName}' does not exist for guard 'web'.");
+            return;
+        }
+
+        Role::all()->each(function ($role) use ($permissionName) {
+            $role->revokePermissionTo($permissionName);
+        });
+
+        User::permission($permissionName)->get()->each(function ($user) use ($permissionName) {
+            $user->revokePermissionTo($permissionName);
+        });
+
+        $permission->delete();
+    }
+
     private function deleteFile(string $path): void
     {
         if (File::exists($path)) {
@@ -145,12 +231,6 @@ class MappingBuilderController extends Controller
         }
     }
 
-    /**
-     * Delete a directory if it exists
-     *
-     * @param string $directory
-     * @return void
-     */
     private function deleteDirectory(string $directory): void
     {
         if (File::exists($directory)) {
@@ -158,101 +238,14 @@ class MappingBuilderController extends Controller
         }
     }
 
-    /**
-     * Remove all route entries that contain the modelNameController from the web.php file
-     *
-     * @param string $modelName
-     * @return void
-     */
     private function removeRouteEntries(string $modelName): void
     {
         $routeFilePath = base_path('routes/web.php');
         $routeFileContent = file_get_contents($routeFilePath);
 
-        // Pattern to match any line containing the modelNameController
         $pattern = "/.*{$modelName}Controller.*\n/";
         $routeFileContent = preg_replace($pattern, '', $routeFileContent);
 
         file_put_contents($routeFilePath, $routeFileContent);
     }
-
-    public function formGenerate(Request $request)
-    {
-        $page_id = base64_decode($request->page);
-        $page = MappingBuilder::where('id', $page_id)->first()->toArray();
-        $parent_table = MappingBuilder::where('id', $page_id)->value('parent');
-        $child_table = MappingBuilder::where('id', $page_id)->value('child');
-        $parent_table_columns = FormBuilder::where('page_name', $parent_table)->select('column_name', 'column_title')->get();
-        $child_table_columns = FormBuilder::where('page_name', $child_table)->select('column_name', 'column_title')->get();
-        $data = MappingBuilder::find($page_id);
-        return view('mapping_builder.mapping_generate_form', compact('page', 'page_id', 'parent_table_columns', 'child_table_columns', 'data'));
-    }
-
-    public function generateMappingBuilder(Request $request)
-    {
-
-        // Validate incoming request data
-        $data = $request->validate([
-            'parent_column' => 'required|string',
-            'child_column' => 'required|array',
-            'mapping_type' => 'required|string',
-            'mapping_id' => 'required|exists:mapping_builders,id' // Validate that mapping_id exists in mapping_builders table
-        ]);
-
-        // Retrieve the mapping_id from validated data
-        $mappingId = $data['mapping_id'];
-        unset($data['mapping_id']); // Remove mapping_id from data array to avoid updating it
-        $data['child_column'] = implode(',', $data['child_column']);
-        // Update the MappingBuilder with the validated data
-        MappingBuilder::where('id', $mappingId)->update($data);
-
-        //Create Database for Mapping
-        $mapping_details = MappingBuilder::where('id', $mappingId)->first();
-        $tableData['table_name'] = $mapping_details->mapping_table_name;
-        $tableData['parent_mapping_name'] = $mapping_details->parent_mapping_name;
-        $tableData['child_mapping_name'] = $mapping_details->child_mapping_name;
-        $tableData['parent'] = $mapping_details->parent;
-        $tableData['child'] = $mapping_details->child;
-        $tableData['parent_column'] = $mapping_details->parent_column;
-        $tableData['child_column'] = $mapping_details->child_column;
-        $this->mappingDatabaseSetup($tableData);
-        //Generate Model for Mapping
-        $this->GenerateMappingModel($tableData);
-        //Generate Controller for Mapping
-        $this->GenerateMappingController($tableData);
-        $this->GenerateMappingRoutes($tableData);
-        $this->GenerateIndexView($tableData);
-        $this->GenerateListView($tableData);
-        // Redirect with success message
-        return redirect()->route('mapping-builder.index')->with('toast_success', 'Mapping Generated Successfully!');
-    }
-
-    function deletePermissions($permissionName)
-    {
-        try {
-            // Attempt to find the permission by name for the 'web' guard
-            $permission = Permission::findByName($permissionName, 'web');
-        } catch (\Spatie\Permission\Exceptions\PermissionDoesNotExist $e) {
-            // Handle the case where the permission does not exist
-            // Log the error or return a specific response
-            // For example:
-            logger()->error("Permission '{$permissionName}' does not exist for guard 'web'.");
-            return; // Or throw an exception, or return a response
-        }
-
-        // Revoke the permission from all roles
-        Role::all()->each(function ($role) use ($permissionName) {
-            $role->revokePermissionTo($permissionName);
-        });
-
-        // Revoke the permission from all users (or other models)
-        User::permission($permissionName)->get()->each(function ($user) use ($permissionName) {
-            $user->revokePermissionTo($permissionName);
-        });
-
-        // Delete the permission from the database
-        $permission->delete();
-    }
-
-
 }

@@ -77,6 +77,22 @@
                         </div>
                     </div>
                 </div>
+                <div class="row-25">
+                    <div class="input-container">
+                        <div class="input-label">
+                            <label for="">Relationship Type</label>
+                        </div>
+                        <div class="input-data">
+                            <select name="relationship_type" id="relationship_type" class="form-select">
+                                <option value="">Select</option>
+                                <option value="one_to_many" {{ $data->relationship_type == 'one_to_many' ? "selected" : "" }}>One to Many</option>
+                                <option value="many_to_many" {{ $data->relationship_type == 'many_to_many' ? "selected" : "" }}>Many to Many</option>
+                            </select>
+                            <div class="error-message @if ($errors->has('relationship_type')) show @endif">Required!</div>
+                            <div class="text-muted" id="relationship_type_help"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             @includeIf("layouts.form_footer",["cancel_route"=>route("mapping-builder.index")])
         </form>

@@ -6,13 +6,16 @@ use App\Models\Menu;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use App\Services\PermissionService;
+
 trait GenerateMappingControllerTrait
 {
     protected $permissionService;
+
     public function __construct(PermissionService $permissionService)
     {
         $this->permissionService = $permissionService;
     }
+
     function GenerateMappingController($tableData): void
     {
         $modelName = Str::studly(Str::singular($tableData['table_name']));
@@ -37,92 +40,103 @@ trait GenerateMappingControllerTrait
         $childModel = Str::studly($tableData['child']);
 
         $parentColumnName = $tableData['parent_column'];
-        $childColumnNames = explode(',', $tableData['child_column']);
-        // Prepare child columns selection string
-        $childColumnSelect = implode("', '", array_map('trim', $childColumnNames));
+        $childColumnNames = array_map('trim', explode(',', $tableData['child_column']));
+        $childColumnSelect = implode("', '", $childColumnNames);
+
         $storeMapping = Str::snake(Str::pluralStudly($tableData['table_name'])) . '_data';
         $mappingList = Str::snake(Str::pluralStudly($tableData['table_name'])) . '_list';
 
-        $parent_id = $tableData['parent_mapping_name'];
-        $child_id_plural = Str::plural($tableData['child_mapping_name']);
-        $child_id_singular = $tableData['child_mapping_name'];
+        $parentId = $tableData['parent_mapping_name'];
+        $childIdPlural = Str::plural($tableData['child_mapping_name']);
+        $childIdSingular = $tableData['child_mapping_name'];
 
+        // Generate the one_to_many specific code if applicable
+        $oneToManyHandling = '';
+        if ($tableData['relationship_type'] === 'one_to_many') {
+            $oneToManyHandling = <<<EOT
+            foreach (\$$childIdPlural as \$$childIdSingular) {
+                \$existingMapping = $modelName::where('$childIdSingular', \$$childIdSingular)
+                    ->whereNull('effective_to')
+                    ->orderBy('effective_from', 'desc')
+                    ->first();
 
-        return <<<EOT
-    <?php
-
-    namespace App\Http\Controllers\Mapping;
-
-    use App\Http\Controllers\Controller;
-    use App\Models\Mapping\\$modelName;
-    use App\Models\\$parentModel\\$parentModel;
-    use App\Models\\$childModel\\$childModel;
-    use Illuminate\Support\Facades\Auth;
-    use Illuminate\Support\Facades\DB;
-    use Carbon\Carbon;
-    use Illuminate\Http\Request;
-
-    class $controllerName extends Controller
-    {
-        public function index()
-        {
-            \${$parentModel}_list = $parentModel::pluck('$parentColumnName', 'id');
-            \${$childModel}_list = $childModel::select(['$childColumnSelect', 'id'])->get();
-            return view("Mapping.{$modelName}.index", compact('{$parentModel}_list', '{$childModel}_list'));
+                if (\$existingMapping && \$existingMapping->effective_from < \$effectiveFrom) {
+                    \$existingMapping->effective_to = \$effectiveFrom->copy()->subDay();
+                    \$existingMapping->updated_at = Carbon::now();
+                    \$existingMapping->save();
+                }
+            }
+EOT;
         }
 
-        public function $storeMapping(Request \$request){
-            \$effective_from = Carbon::parse(\$request->effective_from);
-            \$$parent_id = \$request->$parent_id;
-            \$$child_id_plural = \$request->$child_id_plural;
-            \$currentTimestamp = Carbon::now();
-            \$userId = Auth::user()->id;
-            // Prepare the data for batch insert
-        \$insertData = array_map(function(\$$child_id_singular) use ( \$$parent_id, \$effective_from, \$userId, \$currentTimestamp) {
+        return <<<EOT
+<?php
+
+namespace App\Http\Controllers\Mapping;
+
+use App\Http\Controllers\Controller;
+use App\Models\Mapping\\$modelName;
+use App\Models\\$parentModel\\$parentModel;
+use App\Models\\$childModel\\$childModel;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+
+class $controllerName extends Controller
+{
+    public function index()
+    {
+        \${$parentModel}_list = $parentModel::pluck('$parentColumnName', 'id');
+        \${$childModel}_list = $childModel::select(['$childColumnSelect', 'id'])->get();
+        return view("Mapping.{$modelName}.index", compact('{$parentModel}_list', '{$childModel}_list'));
+    }
+
+    public function $storeMapping(Request \$request)
+    {
+        \$effectiveFrom = Carbon::parse(\$request->effective_from);
+        \$$parentId = \$request->$parentId;
+        \$$childIdPlural = \$request->$childIdPlural;
+        \$currentTimestamp = Carbon::now();
+        \$userId = Auth::user()->id;
+
+        // Prepare the data for batch insert
+        \$insertData = array_map(function(\$$childIdSingular) use (\$$parentId, \$effectiveFrom, \$userId, \$currentTimestamp) {
             return [
-                '$parent_id' =>  \$$parent_id,
-                '$child_id_singular' => \$$child_id_singular,
-                'effective_from' => \$effective_from,
+                '$parentId' => \$$parentId,
+                '$childIdSingular' => \$$childIdSingular,
+                'effective_from' => \$effectiveFrom,
                 'created_by' => \$userId,
                 'created_at' => \$currentTimestamp,
             ];
-        }, \$$child_id_plural);
+        }, \$$childIdPlural);
 
         try {
             // Use a transaction to ensure data integrity
-            DB::transaction(function() use (\$$parent_id, \$$child_id_plural, \$effective_from, \$insertData) {
-                foreach (\$$child_id_plural as \$$child_id_singular) {
-                    // Find any existing mapping with the same $parent_id and $child_id_singular
-                    \$existingMapping = $modelName::where('$child_id_singular', \$$child_id_singular)
-                        ->whereNull('effective_to')
-                        ->orderBy('effective_from', 'desc')
-                        ->first();
-
-                    if (\$existingMapping && \$existingMapping->effective_from < \$effective_from) {
-                        // Update the effective_to date of the existing mapping
-                        \$existingMapping->effective_to = \$effective_from->copy()->subDay();
-                        \$existingMapping->updated_at = Carbon::now();
-                        \$existingMapping->save();
-                    }
-                }
+            DB::transaction(function() use (\$$parentId, \$$childIdPlural, \$effectiveFrom, \$insertData) {
+                $oneToManyHandling
 
                 // Insert the new mappings
                 $modelName::insert(\$insertData);
             });
-                return response()->json(['status' => '200']);
-            } catch (\Exception \$e) {
-                // Handle the exception and return an appropriate response
-                return response()->json(['status' => '500', 'message' => 'An error occurred while processing your request.'], 500);
-            }
-        }
 
-        public function $mappingList(){
-            \$list = $modelName::all();
-            return view("Mapping.{$modelName}.list",compact('list'));
+            return response()->json(['status' => '200']);
+        } catch (\Exception \$e) {
+            // Handle the exception and return an appropriate response
+            return response()->json(['status' => '500', 'message' => 'An error occurred while processing your request.'], 500);
         }
     }
-    EOT;
+
+    public function $mappingList()
+    {
+        \$list = $modelName::all();
+        return view("Mapping.{$modelName}.list", compact('list'));
     }
+}
+EOT;
+    }
+
+
 
 
     function GenerateMappingRoutes($tableData): void
@@ -146,7 +160,7 @@ trait GenerateMappingControllerTrait
 
         // Check if menu already exists
         if (!$this->menuExists($routeName)) {
-            $this->permissionService->createAndAssignPermission($modelName,$tableData['table_name']);
+            $this->permissionService->createAndAssignPermission($modelName, $tableData['table_name']);
             $menu = new Menu();
             $menu->menu_name = formatStringForDisplay($routeName);
             $menu->menu_url = $routeName;
@@ -185,6 +199,4 @@ trait GenerateMappingControllerTrait
     {
         return Menu::where('menu_url', $routeName)->exists();
     }
-
-
 }
