@@ -13,7 +13,7 @@ class FunctionVerticalMapping extends Model
      * @var array
      */
     protected $table = 'function_vertical_mapping';
-    protected $fillable = ['org_function_id', 'vertical_id'];
+    protected $fillable = ['org_function_id', 'vertical_id','name'];
 
     /**
      * Get the parent model relationship.

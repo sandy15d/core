@@ -39,7 +39,7 @@
                                    class="form-checkbox">
                         </label>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-5">
                         <select name="org_function_id" id="org_function_id" class="form-select">
                             <option value="">Select OrgFunction</option>
                             @foreach($OrgFunction_list as $key=>$value)
@@ -64,7 +64,7 @@
                             <th>Vertical Name</th><th>Vertical Code</th>
                         </tr>
                         </thead>
-                        <tbody class="">
+                        <tbody>
                             @foreach($Vertical_list as $data)
                                 <tr>
                                     <td><input type="checkbox" class="form-checkbox check" onclick="checkAllOrNot()" value="{{$data->id}}" name="vertical_select"></td>

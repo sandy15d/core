@@ -49,7 +49,9 @@ trait GenerateMappingControllerTrait
         $parentId = $tableData['parent_mapping_name'];
         $childIdPlural = Str::plural($tableData['child_mapping_name']);
         $childIdSingular = $tableData['child_mapping_name'];
-
+        $parent_table_name = $data['parent_table_name'];
+        $child_table_name = $data['child_table_name'];
+        $childFirstColumn = explode(',',$tableData['child_column'])[0];
         // Generate the one_to_many specific code if applicable
         $oneToManyHandling = '';
         if ($tableData['relationship_type'] === 'one_to_many') {
@@ -105,6 +107,7 @@ class $controllerName extends Controller
             return [
                 '$parentId' => \$$parentId,
                 '$childIdSingular' => \$$childIdSingular,
+                'name'=> getTableColumnValue('$parent_table_name','$parentColumnName',\$$parentId).' - '.getTableColumnValue('$child_table_name','$childFirstColumn',\$$childIdSingular),
                 'effective_from' => \$effectiveFrom,
                 'created_by' => \$userId,
                 'created_at' => \$currentTimestamp,
@@ -135,7 +138,7 @@ class $controllerName extends Controller
 }
 EOT;
     }
-    
+
     function GenerateMappingRoutes($tableData): void
     {
         $modelName = Str::studly(Str::singular($tableData['table_name']));
