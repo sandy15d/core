@@ -5,30 +5,30 @@ namespace App\Models\Mapping;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class SubDeptSectionMapping extends Model
+class RegionTerritoryMapping extends Model
 {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $table = 'sub_dept_section_mapping';
-    protected $fillable = ['sub_department_id', 'section_id'];
+    protected $table = 'region_territory_mapping';
+    protected $fillable = ['region_id', 'territory_id'];
 
     /**
      * Get the parent model relationship.
      */
-    public function subDepartment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function region(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo("App\Models\SubDepartment\SubDepartment", 'sub_department_id', 'id');
+        return $this->belongsTo("App\Models\Region\Region", 'region_id', 'id');
     }
 
     /**
      * Get the child model relationship.
      */
-    public function section(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function territory(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo("App\Models\Section\Section", 'section_id', 'id');
+        return $this->belongsTo("App\Models\Territory\Territory", 'territory_id', 'id');
     }
 
     /**

@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @push('breadcrumb')
-    <li class="breadcrumb-item active">Sub Dept Section Mapping List</li>
+    <li class="breadcrumb-item active">Region Territory Mapping List</li>
 @endpush
 @push('page-back-button')
     <div class="page-back-button">
-        <a href="{{ route('sub_dept_section_mappings.index')}}">
+        <a href="{{ route('region_territory_mappings.index')}}">
             <div class="icon">
                 <div class="font-awesome-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
@@ -45,8 +45,8 @@
                         <thead>
                         <tr data-sort-method='thead'>
                             <th class="table-id" data-sort-method="number">S.No</th>
-                            <th>Sub Department</th>
-<th>Section</th>
+                            <th>Region</th>
+<th>Territory</th>
 <th>Effective From</th>
 <th>Effective To</th>
                         </tr>
@@ -55,8 +55,8 @@
                             @foreach($list as $data)
                                 <tr>
                                      <td>{{$loop->iteration}}</td>
-                                     <td>{{ $data->subDepartment->sub_department_name }}</td>
-<td>{{ $data->section->section_name }}</td>
+                                     <td>{{ $data->region->region_name }}</td>
+<td>{{ $data->territory->territory_name }}</td>
 <td>{{ $data->effective_from }}</td>
 <td>{{ $data->effective_to }}</td>
                                 </tr>

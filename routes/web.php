@@ -97,13 +97,14 @@ Route::get('zone_te_mappings_list', [\App\Http\Controllers\Mapping\ZoneTeMapping
 Route::resource('zone_region_mappings', \App\Http\Controllers\Mapping\ZoneRegionMappingController::class);
 Route::post('zone_region_mappings_data', [\App\Http\Controllers\Mapping\ZoneRegionMappingController::class, 'zone_region_mappings_data'])->name('zone_region_mappings_data');
 Route::get('zone_region_mappings_list', [\App\Http\Controllers\Mapping\ZoneRegionMappingController::class, 'zone_region_mappings_list'])->name('zone_region_mappings_list');
-Route::resource('dept_sub_dept_mappings', \App\Http\Controllers\Mapping\DeptSubDeptMappingController::class);
-Route::post('dept_sub_dept_mappings_data', [\App\Http\Controllers\Mapping\DeptSubDeptMappingController::class, 'dept_sub_dept_mappings_data'])->name('dept_sub_dept_mappings_data');
-Route::get('dept_sub_dept_mappings_list', [\App\Http\Controllers\Mapping\DeptSubDeptMappingController::class, 'dept_sub_dept_mappings_list'])->name('dept_sub_dept_mappings_list');
-Route::resource('sub_dept_section_mappings', \App\Http\Controllers\Mapping\SubDeptSectionMappingController::class);
-Route::post('sub_dept_section_mappings_data', [\App\Http\Controllers\Mapping\SubDeptSectionMappingController::class, 'sub_dept_section_mappings_data'])->name('sub_dept_section_mappings_data');
-Route::get('sub_dept_section_mappings_list', [\App\Http\Controllers\Mapping\SubDeptSectionMappingController::class, 'sub_dept_section_mappings_list'])->name('sub_dept_section_mappings_list');
 Route::resource('function_vertical_mappings', \App\Http\Controllers\Mapping\FunctionVerticalMappingController::class);
 Route::post('function_vertical_mappings_data', [\App\Http\Controllers\Mapping\FunctionVerticalMappingController::class, 'function_vertical_mappings_data'])->name('function_vertical_mappings_data');
 Route::get('function_vertical_mappings_list', [\App\Http\Controllers\Mapping\FunctionVerticalMappingController::class, 'function_vertical_mappings_list'])->name('function_vertical_mappings_list');
 Route::get('vertical_department_mappings_list', [\App\Http\Controllers\Mapping\VerticalDepartmentMappingController::class, 'vertical_department_mappings_list'])->name('vertical_department_mappings_list');
+
+Route::resource('employment_type', \App\Http\Controllers\EmploymentType\EmploymentTypeController::class);
+Route::resource('region_territory_mappings', \App\Http\Controllers\Mapping\RegionTerritoryMappingController::class);
+Route::post('region_territory_mappings_data', [\App\Http\Controllers\Mapping\RegionTerritoryMappingController::class, 'region_territory_mappings_data'])->name('region_territory_mappings_data');
+Route::get('region_territory_mappings_list', [\App\Http\Controllers\Mapping\RegionTerritoryMappingController::class, 'region_territory_mappings_list'])->name('region_territory_mappings_list');
+
+Route::resource('segment', \App\Http\Controllers\Segment\SegmentController::class);
