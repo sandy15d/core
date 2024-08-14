@@ -49,8 +49,8 @@ trait GenerateMappingControllerTrait
         $parentId = $tableData['parent_mapping_name'];
         $childIdPlural = Str::plural($tableData['child_mapping_name']);
         $childIdSingular = $tableData['child_mapping_name'];
-        $parent_table_name = $data['parent_table_name'];
-        $child_table_name = $data['child_table_name'];
+        $parent_table_name = $tableData['parent_table_name'];
+        $child_table_name = $tableData['child_table_name'];
         $childFirstColumn = explode(',',$tableData['child_column'])[0];
         // Generate the one_to_many specific code if applicable
         $oneToManyHandling = '';
