@@ -36,7 +36,7 @@ trait MappingModelGenerateTrait
         $childModelName = Str::studly($tableData['child']);
 
         // Preparing the fillable array
-        $fillable = "['$parent_id', '$child_id']";
+        $fillable = "['$parent_id', '$child_id','name']";
 
         // Preparing the model's relationship method names
         $parentModelMethod = Str::camel($parentModelName);

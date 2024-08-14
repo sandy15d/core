@@ -45,3 +45,13 @@ if (!function_exists('convertTableHeadingString')) {
         return ucwords(str_replace('_', ' ', $string));
     }
 }
+
+if (!function_exists('getTableColumnValue')) {
+    function getTableColumnValue(string $tableName, string $selectColumn, int $id): ?string
+    {
+        return DB::table($tableName)
+            ->where('id', $id)
+            ->value($selectColumn);
+    }
+}
+

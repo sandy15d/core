@@ -39,7 +39,7 @@
                                    class="form-checkbox">
                         </label>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-5">
                         <select name="{{ parent_mapping_name }}" id="{{ parent_mapping_name }}" class="form-select">
                             <option value="">Select {{ parent }}</option>
                             @foreach(${{ parent }}_list as $key=>$value)

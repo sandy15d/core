@@ -14,6 +14,7 @@ trait MappingDatabaseTrait
                 $table->id();
                 $table->integer($tableData['parent_mapping_name']);
                 $table->integer($tableData['child_mapping_name']);
+                $table->string('name');
                 $table->date('effective_from')->nullable();
                 $table->date('effective_to')->nullable();
                 $table->timestamps();
