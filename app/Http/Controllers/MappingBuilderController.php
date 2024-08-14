@@ -125,7 +125,6 @@ class MappingBuilderController extends Controller
 
         return $request->validate($rules);
     }
-
 /*    private function generateMappingAttributes(array $data, Request $request)
     {
         $data['mapping_table_name'] = \Str::snake($data['mapping_name']) . "_mapping";

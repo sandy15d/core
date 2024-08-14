@@ -64,7 +64,7 @@
                             {{ table_heading }}
                         </tr>
                         </thead>
-                        <tbody class="">
+                        <tbody>
                             @foreach(${{ child }}_list as $data)
                                 <tr>
                                     <td><input type="checkbox" class="form-checkbox check" onclick="checkAllOrNot()" value="{{$data->id}}" name="{{ child_small_case }}_select"></td>

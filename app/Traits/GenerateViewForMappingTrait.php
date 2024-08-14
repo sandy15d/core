@@ -47,14 +47,6 @@ trait GenerateViewForMappingTrait
         File::put($viewPath, $viewContent);
     }
 
-    /**
-     * Render the stub file with the given model name.
-     *
-     * @param string $stubPath
-     * @param string $modelName
-     * @return string
-     * @throws \Exception
-     */
     protected function renderStub(string $stubPath, string $modelName, $pageName, $tableData): string
     {
         if (!File::exists($stubPath)) {

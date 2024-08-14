@@ -135,10 +135,7 @@ class $controllerName extends Controller
 }
 EOT;
     }
-
-
-
-
+    
     function GenerateMappingRoutes($tableData): void
     {
         $modelName = Str::studly(Str::singular($tableData['table_name']));
