@@ -33,6 +33,7 @@ class FunctionVerticalMappingController extends Controller
             return [
                 'org_function_id' => $org_function_id,
                 'vertical_id' => $vertical_id,
+                'name'=> getTableColumnValue('org_function','function_name',$org_function_id).' - '.getTableColumnValue('vertical','vertical_name',$vertical_id),
                 'effective_from' => $effectiveFrom,
                 'created_by' => $userId,
                 'created_at' => $currentTimestamp,
