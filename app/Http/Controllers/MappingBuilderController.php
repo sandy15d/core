@@ -86,7 +86,9 @@ class MappingBuilderController extends Controller
     {
         $page_id = base64_decode($request->page);
         $page = MappingBuilder::findOrFail($page_id)->toArray();
+
         $parent_table_columns = $this->getFormBuilderColumns($page['parent']);
+
         $child_table_columns = $this->getFormBuilderColumns($page['child']);
         $data = MappingBuilder::find($page_id);
 
@@ -124,7 +126,7 @@ class MappingBuilderController extends Controller
         return $request->validate($rules);
     }
 
-    private function generateMappingAttributes(array $data, Request $request)
+/*    private function generateMappingAttributes(array $data, Request $request)
     {
         $data['mapping_table_name'] = \Str::snake($data['mapping_name']) . "_mapping";
         $data['parent_table_name'] = Str::snake($request->parent);
@@ -133,7 +135,31 @@ class MappingBuilderController extends Controller
         $data['child_mapping_name'] = Str::snake($request->child) . '_id';
         $data['relationship_type'] = $request->relationship_type;
         return $data;
+    }*/
+
+    private function generateMappingAttributes(array $data, Request $request)
+    {
+        // Check if the parent exists in the MappingBuilder model
+        $parentMapping = MappingBuilder::where('mapping_name', $request->parent)->first();
+
+        if ($parentMapping) {
+            // If exists, set the mapping_table_name value
+            $data['parent_table_name'] = $parentMapping->mapping_table_name;
+        } else {
+            // Otherwise, do what was done before
+            $data['parent_table_name'] = Str::snake($request->parent);
+        }
+
+        // Generate other attributes
+        $data['mapping_table_name'] = Str::snake($data['mapping_name']) . '_mapping';
+        $data['child_table_name'] = Str::snake($request->child);
+        $data['parent_mapping_name'] = Str::snake($request->parent) . '_id';
+        $data['child_mapping_name'] = Str::snake($request->child) . '_id';
+        $data['relationship_type'] = $request->relationship_type;
+
+        return $data;
     }
+
 
     private function validateGenerateMappingRequest(Request $request)
     {
@@ -152,6 +178,7 @@ class MappingBuilderController extends Controller
         $data['child_column'] = implode(',', $data['child_column']);
         MappingBuilder::where('id', $mappingId)->update($data);
     }
+
     private function performMappingGeneration(array $data)
     {
         $mappingDetails = MappingBuilder::findOrFail($data['mapping_id']);
@@ -165,6 +192,8 @@ class MappingBuilderController extends Controller
             'parent_column' => $data['parent_column'],
             'child_column' => implode(',', $data['child_column']),
             'relationship_type' => $mappingDetails->relationship_type,
+            'parent_table_name' => $mappingDetails->parent_table_name,
+            'child_table_name' => $mappingDetails->child_table_name,
         ];
 
         $this->mappingDatabaseSetup($tableData);
@@ -199,10 +228,80 @@ class MappingBuilderController extends Controller
         }
     }
 
+    /*  private function getFormBuilderColumns($tableName)
+      {
+          return FormBuilder::where('page_name', $tableName)->select(['column_name', 'column_title'])->get();
+      }*/
+
     private function getFormBuilderColumns($tableName)
     {
-        return FormBuilder::where('page_name', $tableName)->select('column_name', 'column_title')->get();
+        // Check if the page_name exists in FormBuilder
+        $formBuilderData = FormBuilder::where('page_name', $tableName)
+            ->select(['column_name', 'column_title'])
+            ->get();
+
+        // If page_name exists in FormBuilder, return the data
+        if ($formBuilderData->isNotEmpty()) {
+            return $formBuilderData;
+        }
+
+        // If page_name does not exist in FormBuilder, check in MappingBuilder
+        $mappingBuilderData = MappingBuilder::where('mapping_name', $tableName)
+            ->select('mapping_table_name')
+            ->first();
+
+        // If mapping_name exists in MappingBuilder
+        if ($mappingBuilderData) {
+            $mappingTableName = $mappingBuilderData->mapping_table_name;
+            //generate a new model using $tablename if not exist
+            $studly_case = Str::studly($tableName);
+            $modelDirectory = app_path("Models/{$studly_case}");
+            $modelPath = "{$modelDirectory}/{$studly_case}.php";
+            if (!File::exists($modelPath)) {
+                // Ensure the Models directory exists
+                if (!File::exists($modelDirectory)) {
+                    File::makeDirectory($modelDirectory, 0755, true);
+                }
+
+                // Create the model file
+                $modelContent = "<?php
+
+namespace App\Models\\$studly_case;
+
+use Illuminate\Database\Eloquent\Model;
+
+class {$studly_case} extends Model
+{
+    protected \$table = '{$mappingTableName}';
+}";
+
+                File::put($modelPath, $modelContent);
+            }
+
+
+            // Fetch only the 'name' field from the schema
+            $columns = \DB::getSchemaBuilder()->getColumnListing($mappingTableName);
+
+            // Filter to include only the 'name' column
+            $filteredColumns = collect($columns)->filter(function ($column) {
+                return $column === 'name';
+            });
+
+            // Prepare the data to match the expected FormBuilder format as objects
+            $columnData = $filteredColumns->map(function ($column) {
+                return (object)[
+                    'column_name' => $column,
+                    'column_title' => ucfirst(str_replace('_', ' ', $column)),
+                ];
+            });
+
+            return $columnData;
+        }
+
+        // Return an empty collection if neither page_name nor mapping_name exists
+        return collect([]);
     }
+
 
     private function deletePermissions($permissionName)
     {
