@@ -119,23 +119,23 @@
         }
 
         $(document).on('click','#map_btn',function(){
-            var {{ child_small_case }}_ids = [];
+            var {{ child_plural }} = [];
             var {{ parent_mapping_name }} = $("#{{ parent_mapping_name }}").val();
             var effective_from = $("#effective_from").val();
             $("input[name='{{ child_small_case }}_select']").each(function(){
                 if($(this).prop('checked')=== true){
                     var value = $(this).val();
-                   {{ child_small_case }}_ids.push(value);
+                   {{ child_plural }}.push(value);
                 }
             });
-            console.log({{ child_small_case }}_ids);
-            if({{ child_small_case }}_ids.length > 0){
+
+            if({{ child_plural }}.length > 0){
                 if(confirm('Are you sure to map selected {{ child }} to {{ parent }}?')){
                     $.ajax({
                         url: "{{url('{{ routeName }}')}}",
                         method: 'POST',
                         data:{
-                            {{ child_small_case }}_ids : {{ child_small_case }}_ids,
+                            {{ child_plural }} : {{ child_plural }},
                              {{ parent_mapping_name }}:{{ parent_mapping_name }},
                              effective_from:effective_from
                         },

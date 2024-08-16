@@ -59,6 +59,7 @@ trait GenerateViewForMappingTrait
         $parent_mapping_name = $tableData['parent_mapping_name'];
         $child_mapping_name = $tableData['child_mapping_name'];
         $child_small_case = Str::lower($child);
+        $childIdPlural = Str::plural($tableData['child_mapping_name']);
         $childColumnNames = explode(',', $tableData['child_column']);
         $tableHeading = '';
         foreach ($childColumnNames as $childColumnName) {
@@ -79,8 +80,8 @@ trait GenerateViewForMappingTrait
         $routeName = Str::snake(Str::pluralStudly($tableData['table_name'])) . '_data';
         $list_route = Str::snake(Str::pluralStudly($tableData['table_name'])) . '_list';
         return str_replace(
-            ['{{ page_name }}', '{{ parent }}', '{{ table_heading }}', '{{ table_body }}', '{{ child }}', '{{ parent_mapping_name }}', '{{ child_small_case }}', '{{ routeName }}', '{{ listRoute }}'],
-            [$pageName, $parent, $tableHeading, $tableBody, $child, $parent_mapping_name, $child_small_case, $routeName, $list_route],
+            ['{{ page_name }}', '{{ parent }}', '{{ table_heading }}', '{{ table_body }}', '{{ child }}', '{{ parent_mapping_name }}', '{{ child_small_case }}', '{{ routeName }}', '{{ listRoute }}','{{ child_plural }}'],
+            [$pageName, $parent, $tableHeading, $tableBody, $child, $parent_mapping_name, $child_small_case, $routeName, $list_route,$childIdPlural],
             $stub
         );
     }
