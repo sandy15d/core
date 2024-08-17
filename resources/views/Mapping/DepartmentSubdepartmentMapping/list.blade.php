@@ -8,7 +8,8 @@
             <div class="icon">
                 <div class="font-awesome-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512">
-                        <path d="M192 448c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l137.4 137.4c12.5 12.5 12.5 32.75 0 45.25C208.4 444.9 200.2 448 192 448z"/>
+                        <path
+                            d="M192 448c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l137.4 137.4c12.5 12.5 12.5 32.75 0 45.25C208.4 444.9 200.2 448 192 448z"/>
                     </svg>
                 </div>
             </div>
@@ -46,21 +47,21 @@
                         <tr data-sort-method='thead'>
                             <th class="table-id" data-sort-method="number">S.No</th>
                             <th>Fun Vertical Dept</th>
-<th>Sub Department</th>
-<th>Effective From</th>
-<th>Effective To</th>
+                            <th>Sub Department</th>
+                            <th>Effective From</th>
+                            <th>Effective To</th>
                         </tr>
                         </thead>
                         <tbody>
-                            @foreach($list as $data)
-                                <tr>
-                                     <td>{{$loop->iteration}}</td>
-                                     <td>{{ $data->funVerticalDept->name }}</td>
-<td>{{ $data->subDepartment->sub_department_name }}</td>
-<td>{{ $data->effective_from }}</td>
-<td>{{ $data->effective_to }}</td>
-                                </tr>
-                            @endforeach
+                        @foreach($list as $data)
+                            <tr>
+                                <td>{{$loop->iteration}}</td>
+                                <td>{{ $data->funVerticalDept->name }}</td>
+                                <td>{{ $data->subDepartment->sub_department_name }}</td>
+                                <td>{{ $data->effective_from }}</td>
+                                <td>{{ $data->effective_to }}</td>
+                            </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>

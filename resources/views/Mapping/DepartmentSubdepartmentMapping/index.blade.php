@@ -14,10 +14,12 @@
                         <div class="left">
                             <form class="search-container">
                                 <input name="FunVerticalDept_source" value="FunVerticalDept" type="hidden"/>
-                                <input name="FunVerticalDept_length" value="{{Request()->query("FunVerticalDept_length")}}"
+                                <input name="FunVerticalDept_length"
+                                       value="{{Request()->query("FunVerticalDept_length")}}"
                                        type="hidden"/>
                                 <div class="search">
-                                    <input type="text" autocomplete="off" placeholder="Search" name="FunVerticalDept_search"
+                                    <input type="text" autocomplete="off" placeholder="Search"
+                                           name="FunVerticalDept_search"
                                            value="{{(Request()->query("FunVerticalDept_source") == "FunVerticalDept")?Request()->query("FunVerticalDept_search")??"":""}}"
                                            class="form-input js-ak-search-input">
                                     <button class="search-button" draggable="false">
@@ -40,7 +42,7 @@
                         </label>
                     </div>
                     <div class="col-md-5">
-                        <select name="fun_vertical_dept_id" id="fun_vertical_dept_id" class="form-select js-ak-select2">
+                        <select name="fun_vertical_dept_id" id="fun_vertical_dept_id" class="form-select">
                             <option value="">Select FunVerticalDept</option>
                             @foreach($FunVerticalDept_list as $key=>$value)
                                 <option value="{{$key}}">{{$value}}</option>
@@ -61,19 +63,23 @@
                         <tr data-sort-method='thead'>
                             <th>#</th>
                             <th class="table-id" data-sort-method="number">S.No</th>
-                            <th>Sub Department Name</th><th>Sub Department Code</th>
+                            <th>Sub Department Name</th>
+                            <th>Sub Department Code</th>
                         </tr>
                         </thead>
                         <tbody>
-                            @foreach($SubDepartment_list as $data)
-                                <tr>
-                                    <td><input type="checkbox" class="form-checkbox check" onclick="checkAllOrNot()" value="{{$data->id}}" name="subdepartment_select"></td>
-                                     <td>{{$loop->iteration}}</td>
-                                     <td>{{ $data->sub_department_name }}</td>
-                                        <td>{{ $data->sub_department_code }}</td>
+                        @foreach($SubDepartment_list as $data)
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="form-checkbox check" onclick="checkAllOrNot()"
+                                           value="{{$data->id}}" name="subdepartment_select">
+                                </td>
+                                <td>{{$loop->iteration}}</td>
+                                <td>{{ $data->sub_department_name }}</td>
+                                <td>{{ $data->sub_department_code }}</td>
 
-                                </tr>
-                            @endforeach
+                            </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -106,48 +112,49 @@
                 $('.check').prop("checked", false);
             }
         });
+
         function checkAllOrNot() {
             var all_chk = 1;
             $('.check').each(function () {
-                if ($(this).prop("checked") == false) {
+                if ($(this).prop("checked") === false) {
                     all_chk = 0;
                 }
             });
-            if (all_chk == 0) {
+            if (all_chk === 0) {
                 $('#check_all').prop("checked", false);
-            } else if (all_chk == 1) {
+            } else if (all_chk === 1) {
                 $('#check_all').prop("checked", true);
             }
         }
 
-        $(document).on('click','#map_btn',function(){
-            var subdepartment_ids = [];
+        $(document).on('click', '#map_btn', function () {
+            var sub_department_ids = [];
             var fun_vertical_dept_id = $("#fun_vertical_dept_id").val();
             var effective_from = $("#effective_from").val();
-            $("input[name='subdepartment_select']").each(function(){
-                if($(this).prop('checked')=== true){
+            $("input[name='subdepartment_select']").each(function () {
+                if ($(this).prop('checked') === true) {
                     var value = $(this).val();
-                   subdepartment_ids.push(value);
+                    sub_department_ids.push(value);
                 }
             });
-            console.log(subdepartment_ids);
-            if(subdepartment_ids.length > 0){
-                if(confirm('Are you sure to map selected SubDepartment to FunVerticalDept?')){
+
+            if (sub_department_ids.length > 0) {
+                if (confirm('Are you sure to map selected SubDepartment to FunVerticalDept?')) {
                     $.ajax({
                         url: "{{url('department_subdepartment_mappings_data')}}",
                         method: 'POST',
-                        data:{
-                            subdepartment_ids : subdepartment_ids,
-                             fun_vertical_dept_id:fun_vertical_dept_id,
-                             effective_from:effective_from
+                        data: {
+                            sub_department_ids: sub_department_ids,
+                            fun_vertical_dept_id: fun_vertical_dept_id,
+                            effective_from: effective_from
                         },
                         headers: {
-                           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        success:function(response){
-                            if(response.status === 400){
+                        success: function (response) {
+                            if (response.status === 400) {
                                 ToastStart.error('Something went wrong.. Please try again');
-                            }else{
+                            } else {
                                 ToastStart.success('SubDepartment Mapped Successfully to FunVerticalDept.');
                             }
                             setTimeout(function () {
@@ -155,10 +162,10 @@
                             }, 2000);
                         }
                     });
-                }else{
-                   window.location.reload();
+                } else {
+                    window.location.reload();
                 }
-            }else{
+            } else {
                 ToastStart.error('No SubDepartment Selected!\nPlease select at least one SubDepartment to proceed.');
             }
         });

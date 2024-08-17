@@ -24,7 +24,7 @@ class DepartmentSubdepartmentMappingController extends Controller
     {
         $effectiveFrom = Carbon::parse($request->effective_from);
         $fun_vertical_dept_id = $request->fun_vertical_dept_id;
-        $sub_department_ids = $request->subdepartment_ids;
+        $sub_department_ids = $request->sub_department_ids;
         $currentTimestamp = Carbon::now();
         $userId = Auth::user()->id;
 
