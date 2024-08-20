@@ -9,3 +9,6 @@ Route::get('/project/apis', function (Request $request) {
     $apiBuilders = $project->apiBuilders->makeHidden(['predefined_conditions', 'created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by', 'deleted_by']);
     return response()->json(['api_list' => $apiBuilders, 'status' => 200]);
 })->name('project.apis');
+
+Route::get('/countries', [\App\Http\Controllers\API\CountryController::class, 'countries'])->name('countries');
+Route::get('/states', [\App\Http\Controllers\API\StateController::class, 'states'])->name('states');
