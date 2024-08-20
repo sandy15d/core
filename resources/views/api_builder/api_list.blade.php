@@ -45,7 +45,9 @@
                         <thead>
                         <tr data-sort-method='thead'>
                             <th class="table-id" data-sort-method="number">ID</th>
+                            <th>API Name</th>
                             <th>API End Point</th>
+                            <th>Method</th>
                             <th>Model</th>
                             <th>Parameters</th>
                             <th>Pre Defined Conditions</th>
@@ -61,7 +63,9 @@
                         @foreach($api_list as $data)
                             <tr>
                                 <td>{{$loop->iteration}}</td>
+                                <td>{{$data->api_name}}</td>
                                 <td>{{$data->route_name}}</td>
+                                <td>{{$data->method_name}}</td>
                                 <td>{{$data->model}}</td>
                                 <td>{{$data->parameters}}</td>
                                 <td>
