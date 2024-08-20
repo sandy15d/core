@@ -48,7 +48,7 @@
                                                 @foreach ($apis as $api)
                                                     <option value="{{ $api->id }}"
                                                         {{ in_array($api->id, $projectApis) ? 'selected' : '' }}>
-                                                        {{ $api->route_name }}
+                                                        {{ $api->api_name }}
                                                     </option>
                                                 @endforeach
                                             </optgroup>

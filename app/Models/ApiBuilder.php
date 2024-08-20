@@ -12,7 +12,7 @@ class ApiBuilder extends Model
 
     protected $table = 'api_builder';
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
-    protected $fillable = ['route_name', 'model', 'parameters', 'predefined_conditions','description'];
+    protected $fillable = ['api_name', 'route_name', 'method_name', 'model', 'parameters', 'predefined_conditions', 'description'];
     protected $casts = [
         'predefined_conditions' => 'array',  // Cast predefined_conditions to an array
     ];
@@ -43,7 +43,7 @@ class ApiBuilder extends Model
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class,'project_api_builder');
+        return $this->belongsToMany(Project::class, 'project_api_builder');
     }
 
 

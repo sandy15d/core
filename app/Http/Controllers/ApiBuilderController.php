@@ -46,25 +46,29 @@ class ApiBuilderController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
+            'api_name' => 'required',
             'route_name' => ['required', 'unique:api_builder', new ReservedKeyword],
-            'model' => 'required'
+            'model' => 'required',
+            'method_name' => 'required',
         ],
             [
+                'api_name.required' => 'Please enter Api Name',
                 'route_name.required' => 'Route name is required.',
                 'model.required' => 'Model is required.',
                 'route_name.unique' => 'Route name already exists.',
+                'method_name.required' => 'Method name is required.',
             ]
         );
         $data['parameters'] = $request->parameters;
         $data['predefined_conditions'] = $request->predefined_conditions ? json_encode($request->predefined_conditions) : null;
         $data['description'] = $request->description ? $request->description : null;
         ApiBuilder::create($data);
-        $this->generateControllerMethod($data['route_name'], $data['model'], $data['parameters'], json_decode($data['predefined_conditions'], true));
-        $this->generateRoute($data['route_name'], $data['model']);
+        $this->generateControllerMethod($data['route_name'], $data['method_name'], $data['model'], $data['parameters'], json_decode($data['predefined_conditions'], true));
+        $this->generateRoute($data['route_name'],$data['method_name'], $data['model']);
         return redirect(route("api-builder.index"))->with("toast_success", 'Page created successfully');
     }
 
-    private function generateControllerMethod($route, $model, $parameters, $predefinedConditions = [])
+    private function generateControllerMethod($route, $method, $model, $parameters, $predefinedConditions = [])
     {
         $controllerDirectory = app_path("Http/Controllers/API");
         $controllerPath = "{$controllerDirectory}/{$model}Controller.php";
@@ -124,9 +128,8 @@ class ApiBuilderController extends Controller
             $validationRules .= "        }\n";
         }
         $methodDefinition = "\n    //{$route} start\n";
-        // Replace hyphens with underscores
-        $snakeCaseString = Str::snake(str_replace('-', '_', $route));
-        $methodDefinition .= "\n    public function $snakeCaseString(Request \$request)\n    {\n";
+
+        $methodDefinition .= "\n    public function $method(Request \$request)\n    {\n";
         if ($validationRules) {
             $methodDefinition .= "        $validationRules";
         }
@@ -156,13 +159,13 @@ class ApiBuilderController extends Controller
     }
 
 
-    private function generateRoute($route, $model)
+    private function generateRoute($route,$method, $model)
     {
         // Generate the controller class name
         $controller = ucfirst($model) . 'Controller';
 
         // Construct the route definition string
-        $routeDefinition = "\nRoute::get('/$route', [\App\Http\Controllers\API\\$controller::class, '$route'])->name('$route');";
+        $routeDefinition = "\nRoute::get('/$route', [\App\Http\Controllers\API\\$controller::class, '$method'])->name('$route');";
 
         // Append the route definition to the api.php file
         \File::append(base_path('routes/api.php'), $routeDefinition);
@@ -197,20 +200,24 @@ class ApiBuilderController extends Controller
         $data = $request->validate([
             'route_name' => [
                 'required',
-                // Exclude the current record from the unique check
                 Rule::unique('api_builder')->ignore($apiBuilder->id),
                 new ReservedKeyword
             ],
+            'api_name' => 'required',
+            'method_name' => 'required',
             'model' => 'required'
         ],
             [
                 'route_name.required' => 'Route name is required.',
                 'model.required' => 'Model is required.',
                 'route_name.unique' => 'Route name already exists.',
+                'method_name.required' => 'Method name is required.',
+                'api_name.required' => 'Api name is required.',
             ]);
 
         // Prepare the data for updating
         $data['parameters'] = $request->parameters;
+        $data['method_name'] = $request->method_name;
         $data['predefined_conditions'] = $request->predefined_conditions ? json_encode($request->predefined_conditions) : null;
         $data['description'] = $request->description ? $request->description : null;
 
@@ -219,12 +226,13 @@ class ApiBuilderController extends Controller
 
         // Remove existing controller method and generate the updated method
         $this->removeControllerMethod($apiBuilder->route_name, $apiBuilder->model);
-        $this->generateControllerMethod(
+
+        $this->updateControllerMethod(
             $data['route_name'],
+            $data['method_name'],
             $data['model'],
             $data['parameters'],
-            json_decode($data['predefined_conditions'], true)
-        );
+            json_decode($data['predefined_conditions'], true));
 
         return redirect()->route('api-builder.index')->with('toast_success', 'API Updated Successfully!');
     }
@@ -279,5 +287,84 @@ class ApiBuilderController extends Controller
         File::put($routeFilePath, $newContent);
     }
 
+    private function updateControllerMethod($route, $method, $model, $parameters, $predefinedConditions = [])
+    {
+        $controllerDirectory = app_path("Http/Controllers/API");
+        $controllerPath = "{$controllerDirectory}/{$model}Controller.php";
 
+
+
+        $parameterList = $parameters ? explode(',', $parameters) : [];
+        $queryConditions = '';
+
+        if ($parameterList) {
+            foreach ($parameterList as $param) {
+                $queryConditions .= "\n            if (\$request->has('$param')) {\n";
+                $queryConditions .= "                \$query->where('$param', \$request->input('$param'));\n";
+                $queryConditions .= "            }";
+            }
+        }
+        $predefinedConditionsString = '';
+        if (!empty($predefinedConditions)) {
+            foreach ($predefinedConditions as $condition) {
+                if (isset($condition['field']) && isset($condition['operator'])) {
+                    $field = $condition['field'];
+                    $operator = strtoupper(trim($condition['operator']));
+
+                    if ($operator === 'IS NULL') {
+                        $predefinedConditionsString .= "\n        \$query->whereNull('$field');";
+                    } elseif ($operator === 'IS NOT NULL') {
+                        $predefinedConditionsString .= "\n        \$query->whereNotNull('$field');";
+                    } else {
+                        if (isset($condition['value'])) {
+                            $value = $condition['value'];
+                            $predefinedConditionsString .= "\n        \$query->where('$field', '$operator', '$value');";
+                        }
+                    }
+                }
+            }
+        }
+
+
+        $validationRules = '';
+        if ($parameterList) {
+            $validationRules = "\$validator = Validator::make(\$request->all(), [\n";
+            foreach ($parameterList as $param) {
+                $validationRules .= "            '$param' => 'required',\n";
+            }
+            $validationRules .= "        ]);\n\n";
+            $validationRules .= "        if (\$validator->fails()) {\n";
+            $validationRules .= "            return response()->json(['error' => 'Parameter missing', 'details' => \$validator->errors(),'status'=>400], 400);\n";
+            $validationRules .= "        }\n";
+        }
+        $methodDefinition = "\n    //{$route} start\n";
+
+        $methodDefinition .= "\n    public function $method(Request \$request)\n    {\n";
+        if ($validationRules) {
+            $methodDefinition .= "        $validationRules";
+        }
+        $methodDefinition .= "        \$query = \\App\\Models\\$model\\$model::query();\n";
+        $methodDefinition .= $predefinedConditionsString;
+        $methodDefinition .= $queryConditions;
+        $methodDefinition .= "\n\n        \$data = \$query->get()->makeHidden(['created_at', 'created_by', 'updated_at', 'updated_by', 'deleted_at', 'deleted_by']);\n";
+        $methodDefinition .= "        return response()->json(['list'=>\$data,'status'=>200]);\n";
+        $methodDefinition .= "    }\n";
+        $methodDefinition .= "    //{$route} end\n";
+        // Get the existing content of the controller file
+        $existingContent = File::get($controllerPath);
+
+        // Ensure the content contains the class definition
+        $classStartPosition = strpos($existingContent, "class {$model}Controller extends Controller");
+        $classEndPosition = strpos($existingContent, '//End File');
+
+        if ($classStartPosition === false || $classEndPosition === false) {
+            throw new \Exception("Controller class or End File marker not found in {$model}Controller.");
+        }
+
+        // Insert the new method before the End File marker within the class
+        $newContent = substr($existingContent, 0, $classEndPosition) . $methodDefinition . substr($existingContent, $classEndPosition);
+
+        // Save the updated content back to the controller file
+        File::put($controllerPath, $newContent);
+    }
 }
