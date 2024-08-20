@@ -7,7 +7,10 @@
     <!-- multi.js css -->
     <link rel="stylesheet" type="text/css" href="{{URL::to('/')}}/assets/vendors/multi.js/multi.min.css"/>
     <style>
-
+        .text-muted, a {
+            font-size: .875rem;
+            line-height: 0.25rem !important;
+        }
     </style>
 @endpush
 
