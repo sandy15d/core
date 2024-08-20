@@ -9,13 +9,6 @@
 @endpush
 
 @section('content')
-
-    <style>
-        .text-muted, a {
-            font-size: .875rem;
-            line-height: 0.30rem !important;
-        }
-    </style>
     <div class="page-content-width-full">
         <div
             class="content-layout content-width-full  js-ak-DataTable js-ak-delete-container js-ak-content-layout"
