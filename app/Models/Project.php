@@ -43,8 +43,8 @@ class Project extends Model
         });
     }
 
-    public function apis()
+    public function apiBuilders()
     {
-        return $this->hasMany(APIBuilder::class);
+        return $this->belongsToMany(APIBuilder::class,'project_api_builder');
     }
 }

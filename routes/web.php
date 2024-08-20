@@ -35,6 +35,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     Route::resource('project', \App\Http\Controllers\ProjectController::class);
+    Route::get('/project/api/{project_id}', [\App\Http\Controllers\ProjectController::class, 'getProjectApi'])->name('project.api');
+    Route::post('set_api', [\App\Http\Controllers\ProjectController::class, 'setApi'])->name('set_api');
 
     Route::resource('api-builder', \App\Http\Controllers\ApiBuilderController::class);
 

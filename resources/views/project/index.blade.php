@@ -101,15 +101,17 @@
                     @endif
                     <div class="settings">
                         <a draggable="false" class="" href="{{route('project.edit',$project->id)}}"><i
-                                class="fa-solid fa-sliders"></i></a>
+                                    class="fa-solid fa-sliders"></i></a>
                     </div>
                     <div class="ak-project-info">
                         <span> {{ \Carbon\Carbon::parse($project->updated_at)->format('d M Y') }}</span>
                         <h5>{{$project->project_name}}</h5>
                         <div class="builder">
-                            <a draggable="false" href=""
-                               class="button primary-button"> <i
-                                    class="fa-solid fa-layer-group pr-3"></i> Builder</a>
+                            <a draggable="false"
+                               href="{{ route('project.api', ['project_id' => base64_encode($project->id)]) }}"
+                               class="button primary-button">
+                                <i class="fa-solid fa-layer-group pr-3"></i> Builder
+                            </a>
                         </div>
                     </div>
                 </div>

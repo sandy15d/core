@@ -6,7 +6,8 @@
 
 @section('content')
     <div class="page-content-width-full">
-        <div class="content-layout content-width-full api-data-content js-ak-DataTable js-ak-delete-container js-ak-content-layout">
+        <div
+            class="content-layout content-width-full api-data-content js-ak-DataTable js-ak-delete-container js-ak-content-layout">
             <div class="content-element">
                 <div class="content-header">
                     <div class="action">
@@ -48,6 +49,7 @@
                             <th>Model</th>
                             <th>Parameters</th>
                             <th>Pre Defined Conditions</th>
+                            <th>Description</th>
                             <th class="no-sort manage-th" data-orderable="false">
                                 <div class="manage-links">
 
@@ -71,6 +73,9 @@
                                     @else
                                         {{ $data->predefined_conditions }}
                                     @endif
+                                </td>
+                                <td>
+                                    {{$data->description}}
                                 </td>
                                 <td class="manage-td">
                                     <div class="manage-links">

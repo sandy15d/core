@@ -8,6 +8,7 @@ use App\Models\PageBuilder;
 use App\Rules\ReservedKeyword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ApiBuilderController extends Controller
@@ -56,6 +57,7 @@ class ApiBuilderController extends Controller
         );
         $data['parameters'] = $request->parameters;
         $data['predefined_conditions'] = $request->predefined_conditions ? json_encode($request->predefined_conditions) : null;
+        $data['description'] = $request->description ? $request->description : null;
         ApiBuilder::create($data);
         $this->generateControllerMethod($data['route_name'], $data['model'], $data['parameters'], json_decode($data['predefined_conditions'], true));
         $this->generateRoute($data['route_name'], $data['model']);
@@ -122,7 +124,9 @@ class ApiBuilderController extends Controller
             $validationRules .= "        }\n";
         }
         $methodDefinition = "\n    //{$route} start\n";
-        $methodDefinition .= "\n    public function $route(Request \$request)\n    {\n";
+        // Replace hyphens with underscores
+        $snakeCaseString = Str::snake(str_replace('-', '_', $route));
+        $methodDefinition .= "\n    public function $snakeCaseString(Request \$request)\n    {\n";
         if ($validationRules) {
             $methodDefinition .= "        $validationRules";
         }
@@ -184,7 +188,7 @@ class ApiBuilderController extends Controller
             'IS NOT NULL' => 'Is Not Null'
         ];
 
-        return view('api_builder.create_api', compact('table_list', 'data', 'predefinedConditions','operators'));
+        return view('api_builder.create_api', compact('table_list', 'data', 'predefinedConditions', 'operators'));
     }
 
     public function update(Request $request, ApiBuilder $apiBuilder)
@@ -208,6 +212,7 @@ class ApiBuilderController extends Controller
         // Prepare the data for updating
         $data['parameters'] = $request->parameters;
         $data['predefined_conditions'] = $request->predefined_conditions ? json_encode($request->predefined_conditions) : null;
+        $data['description'] = $request->description ? $request->description : null;
 
         // Update the APIBuilder record
         $apiBuilder->update($data);

@@ -19,7 +19,7 @@
             </div>
             <div class="form-header">
                 <h3>{{ isset($data->id) ? 'Update' : 'Add New' }}</h3>
-                <p class="danger-text"><b>Note: Do not use any reserved words or special characters in the route name.
+                <p class="danger-text"><b>Note: Do not use any reserved words,special characters or space in the route name.
                         Instead of spaces, you can use underscores (_) or hyphens (-).</b></p>
                 <div class="form-delete-record">
                     @if(isset($data->id))
@@ -55,7 +55,8 @@
                             <select class="form-select js-ak-select2" id="model" name="model">
                                 <option value="">Select Model</option>
                                 @foreach($table_list as $key=>$value)
-                                    <option value="{{$key}}" {{ $data->model == $key ? "selected" : "" }}>{{$key}}</option>
+                                    <option
+                                        value="{{$key}}" {{ $data->model == $key ? "selected" : "" }}>{{$key}}</option>
                                 @endforeach
                             </select>
                             <div class="error-message @if ($errors->has('model')) show @endif">Required!</div>
@@ -85,24 +86,34 @@
                             @foreach($predefinedConditions as $index => $condition)
                                 <div class="predefined_condition row">
                                     <div class="row-25 col">
-                                        <input type="text" name="predefined_conditions[{{ $index }}][field]" value="{{ $condition['field'] ?? '' }}" placeholder="Field" class="form-input">
+                                        <input type="text" name="predefined_conditions[{{ $index }}][field]"
+                                               value="{{ $condition['field'] ?? '' }}" placeholder="Field"
+                                               class="form-input">
                                     </div>
 
                                     <div class="col">
-                                        <select name="predefined_conditions[{{ $index }}][operator]" class="form-select">
+                                        <select name="predefined_conditions[{{ $index }}][operator]"
+                                                class="form-select">
                                             <option value="">Select</option>
                                             @foreach($operators as $value => $label)
-                                                <option value="{{ $value }}" {{ isset($condition['operator']) && $condition['operator'] == $value ? 'selected' : '' }}> {{ $label }}  </option>
+                                                <option
+                                                    value="{{ $value }}" {{ isset($condition['operator']) && $condition['operator'] == $value ? 'selected' : '' }}> {{ $label }}  </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="row-25 col">
-                                        <input type="text" name="predefined_conditions[{{ $index }}][value]" value="{{ $condition['value'] ?? '' }}" placeholder="Value" class="form-input">
+                                        <input type="text" name="predefined_conditions[{{ $index }}][value]"
+                                               value="{{ $condition['value'] ?? '' }}" placeholder="Value"
+                                               class="form-input">
                                     </div>
                                     <div class="col">
                                         <div class="row">
-                                            <div class="col-sm-2">  <span class="remove_condition_button" role="button" tabindex="0">@includeIf("layouts.icons.delete_icon")</span></div>
-                                            <div class="col-sm-2"> <span id="add_condition_button" role="button">@includeIf("layouts.icons.add_new_icon")</span></div>
+                                            <div class="col-sm-2"><span class="remove_condition_button" role="button"
+                                                                        tabindex="0">X</span>
+                                            </div>
+                                            <div class="col-sm-2"><span id="add_condition_button"
+                                                                        role="button">@includeIf("layouts.icons.add_new_icon")</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -111,7 +122,8 @@
                         @else
                             <div class="predefined_condition row">
                                 <div class="row-25 col">
-                                    <input type="text" name="predefined_conditions[0][field]" placeholder="Field" class="form-input">
+                                    <input type="text" name="predefined_conditions[0][field]" placeholder="Field"
+                                           class="form-input">
                                 </div>
                                 <div class="col">
                                     <select name="predefined_conditions[0][operator]" class="form-select">
@@ -122,10 +134,12 @@
                                     </select>
                                 </div>
                                 <div class="row-25 col">
-                                    <input type="text" name="predefined_conditions[0][value]" placeholder="Value" class="form-input">
+                                    <input type="text" name="predefined_conditions[0][value]" placeholder="Value"
+                                           class="form-input">
                                 </div>
                                 <div class="col">
-                                    <button type="button" id="add_condition_button" class="button">@includeIf("layouts.icons.add_new_icon")</button>
+                                    <button type="button" id="add_condition_button"
+                                            class="button">@includeIf("layouts.icons.add_new_icon")</button>
                                 </div>
                             </div>
                         @endif
@@ -135,7 +149,16 @@
                     <div class="alert alert-danger">{{ $message }}</div>
                     @enderror
                 </div>
-
+                <div class="row-100">
+                    <div class="input-container">
+                        <div class="input-label">
+                            <label for="description">Description</label>
+                        </div>
+                        <div class="input-data">
+                            <textarea id="description" name="description" class="form-input">{{{ old('description', $data->description??'') }}}</textarea>
+                        </div>
+                    </div>
+                </div>
 
             </div>
             @includeIf("layouts.form_footer",["cancel_route"=>route("api-builder.index")])
@@ -144,7 +167,7 @@
 @endsection
 @push('bottom_script')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             let conditionIndex = document.querySelectorAll('#predefined_conditions_wrapper .predefined_condition').length;
 
             // Add new condition
@@ -161,7 +184,7 @@
                <select name="predefined_conditions[${conditionIndex}][operator]" class="form-select">
                 <option value="">Select</option>
                     @foreach($operators as $value => $label)
-                        <option value="{{ $value }}"> {{ $label }} </option>
+                <option value="{{ $value }}"> {{ $label }} </option>
                     @endforeach
                 </select>
             </div>
@@ -169,7 +192,7 @@
                 <input type="text" name="predefined_conditions[${conditionIndex}][value]" placeholder="Value" class="form-input">
             </div>
             <div class="col">
-                <span class="remove_condition_button" role="button" tabindex="0">Remove</span>
+                <span class="remove_condition_button" role="button" tabindex="0">X</span>
             </div>
         `;
 
@@ -178,7 +201,7 @@
             });
 
             // Remove condition
-            document.getElementById('predefined_conditions_wrapper').addEventListener('click', function(event) {
+            document.getElementById('predefined_conditions_wrapper').addEventListener('click', function (event) {
                 if (event.target.classList.contains('remove_condition_button')) {
                     const conditionDiv = event.target.closest('.predefined_condition');
                     if (conditionDiv) {
