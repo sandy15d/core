@@ -45,6 +45,6 @@ class Project extends Model
 
     public function apiBuilders()
     {
-        return $this->belongsToMany(APIBuilder::class,'project_api_builder');
+        return $this->belongsToMany(ApiBuilder::class,'project_api_builder');
     }
 }
