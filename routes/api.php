@@ -14,7 +14,9 @@ Route::get('/project/apis', function (Request $request) {
         'deleted_at',
         'created_by',
         'updated_by',
-        'deleted_by'
+        'deleted_by',
+        'method_name',
+        'model'
     ]);
 
     // Define the key mappings (old_key => new_key)
