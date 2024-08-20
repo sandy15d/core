@@ -6,15 +6,16 @@
 @push('bottom_style')
     <!-- multi.js css -->
     <link rel="stylesheet" type="text/css" href="{{URL::to('/')}}/assets/vendors/multi.js/multi.min.css"/>
+@endpush
+
+@section('content')
+
     <style>
         .text-muted, a {
             font-size: .875rem;
             line-height: 0.30rem !important;
         }
     </style>
-@endpush
-
-@section('content')
     <div class="page-content-width-full">
         <div
             class="content-layout content-width-full  js-ak-DataTable js-ak-delete-container js-ak-content-layout"
