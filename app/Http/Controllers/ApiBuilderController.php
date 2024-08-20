@@ -64,7 +64,7 @@ class ApiBuilderController extends Controller
         $data['description'] = $request->description ? $request->description : null;
         ApiBuilder::create($data);
         $this->generateControllerMethod($data['route_name'], $data['method_name'], $data['model'], $data['parameters'], json_decode($data['predefined_conditions'], true));
-        $this->generateRoute($data['route_name'],$data['method_name'], $data['model']);
+        $this->generateRoute($data['route_name'], $data['method_name'], $data['model']);
         return redirect(route("api-builder.index"))->with("toast_success", 'Page created successfully');
     }
 
@@ -159,7 +159,7 @@ class ApiBuilderController extends Controller
     }
 
 
-    private function generateRoute($route,$method, $model)
+    private function generateRoute($route, $method, $model)
     {
         // Generate the controller class name
         $controller = ucfirst($model) . 'Controller';
@@ -225,7 +225,7 @@ class ApiBuilderController extends Controller
         $apiBuilder->update($data);
 
         // Remove existing controller method and generate the updated method
-        $this->removeControllerMethod($apiBuilder->route_name, $apiBuilder->model);
+        $this->removeControllerMethod($apiBuilder->route_name, $apiBuilder->method_name, $apiBuilder->model);
 
         $this->updateControllerMethod(
             $data['route_name'],
@@ -240,14 +240,14 @@ class ApiBuilderController extends Controller
 
     public function destroy(ApiBuilder $apiBuilder)
     {
-        $this->removeControllerMethod($apiBuilder->route_name, $apiBuilder->model);
+        $this->removeControllerMethod($apiBuilder->route_name, $apiBuilder->method_name, $apiBuilder->model);
         // Delete the API entry from the database
         $apiBuilder->delete();
         // Redirect back with a success message
         return redirect()->route('api-builder.index')->with('toast_success', 'API Deleted Successfully!');
     }
 
-    private function removeControllerMethod($route, $model)
+    private function removeControllerMethod($route, $method, $model)
     {
         $controllerDirectory = app_path("Http/Controllers/API");
         $controllerPath = "{$controllerDirectory}/{$model}Controller.php";
@@ -278,7 +278,7 @@ class ApiBuilderController extends Controller
         $existingContent = File::get($routeFilePath);
 
         // Define the marker for the route
-        $routeDefinition = "\nRoute::get('/$route', [\App\Http\Controllers\API\\" . $model . 'Controller::class, \'' . $route . '\'])->name(\'' . $route . '\');';
+        $routeDefinition = "\nRoute::get('/$route', [\App\Http\Controllers\API\\" . $model . 'Controller::class, \'' . $method . '\'])->name(\'' . $route . '\');';
 
         // Remove the route definition
         $newContent = str_replace($routeDefinition, '', $existingContent);
@@ -291,7 +291,6 @@ class ApiBuilderController extends Controller
     {
         $controllerDirectory = app_path("Http/Controllers/API");
         $controllerPath = "{$controllerDirectory}/{$model}Controller.php";
-
 
 
         $parameterList = $parameters ? explode(',', $parameters) : [];
