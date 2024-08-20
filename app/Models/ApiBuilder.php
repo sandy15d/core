@@ -16,7 +16,7 @@ class ApiBuilder extends Model
     protected $casts = [
         'predefined_conditions' => 'array',  // Cast predefined_conditions to an array
     ];
-
+    protected $hidden = array('pivot');
     public function scopeStartSearch($query, $search): void
     {
         if ($search) {

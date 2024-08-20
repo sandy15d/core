@@ -13,6 +13,7 @@ class Project extends Model
     protected $table = 'project';
     protected $fillable = ['project_name', 'platform', 'project_key', 'is_active'];
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    protected $hidden = array('pivot');
 
     public function scopeStartSearch($query, $search): void
     {
