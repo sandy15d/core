@@ -24,7 +24,7 @@ class ApiBuilderController extends Controller
 
     public function create()
     {
-        $list = PageBuilder::pluck('snake_case', 'page_name')->toArray();
+        $list = PageBuilder::pluck('studly_case', 'page_name')->toArray();
         $list2 = MappingBuilder::pluck('mapping_table_name', 'mapping_name')->toArray();
         $table_list = array_merge($list, $list2);
         $data = new ApiBuilder();

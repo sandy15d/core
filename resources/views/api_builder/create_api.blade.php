@@ -43,7 +43,7 @@
                                 <option value="">Select Model</option>
                                 @foreach($table_list as $key=>$value)
                                     <option
-                                        value="{{$key}}" {{ $data->model == $key ? "selected" : "" }}>{{$key}}</option>
+                                        value="{{$value}}" {{ $data->model == $key ? "selected" : "" }}>{{$key}}</option>
                                 @endforeach
                             </select>
                             <div class="error-message @if ($errors->has('model')) show @endif">Required!</div>
