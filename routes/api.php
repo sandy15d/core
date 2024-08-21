@@ -46,3 +46,7 @@ Route::get('/project/apis', function (Request $request) {
 Route::get('/countries', [\App\Http\Controllers\API\CountryController::class, 'countries'])->name('countries');
 Route::get('/states', [\App\Http\Controllers\API\StateController::class, 'states'])->name('states');
 
+
+Route::get('/districts', [\App\Http\Controllers\API\DistrictController::class, 'districts'])->name('districts');
+Route::get('/block_by_district', [\App\Http\Controllers\API\BlockController::class, 'blockByDistrict'])->name('block_by_district');
+Route::get('/city_village_by_state', [\App\Http\Controllers\API\CityVillageController::class, 'cityVillageByState'])->name('city_village_by_state');

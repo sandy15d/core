@@ -45,14 +45,14 @@
                 <label for="district_id">District <span class="required">*</span></label>
             </div>
             <div class="input-data">
-                <select name="district_id" id="district_id" class="form-select">
-                    <option value="">Select District</option>@foreach ($district_list as $list)
+                <select name="district_id" id="district_id" class="form-select js-ak-select2">
+                    <option value="">Select District</option><br>@foreach ($district_list as $list)
                                         <option value="{{$list->id}}" {{ $data->district_id == $list->id ? "selected" : "" }}>{{ $list->district_name }}</option>
                                      @endforeach
                 </select>
                 <div class="error-message @if ($errors->has('district_id')) show @endif">
                     Required!</div>
-                <div class="text-muted" id="district_id_help"></div>
+               <div class="text-muted" id="district_id_help"></div>
             </div>
         </div>
     </div>    <div class="row-25">
