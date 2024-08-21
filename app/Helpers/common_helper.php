@@ -55,3 +55,12 @@ if (!function_exists('getTableColumnValue')) {
     }
 }
 
+if (!function_exists('count_apis')) {
+    function count_apis(int $id): int
+    {
+        return DB::table('project_api_builder')
+            ->where('project_id', $id)
+            ->count();
+    }
+}
+

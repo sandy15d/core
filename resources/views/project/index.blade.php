@@ -105,7 +105,7 @@
                     </div>
                     <div class="ak-project-info">
                         <h5>{{$project->project_name}}</h5>
-                        <span> Total APIs: </span>
+                        <small>APIs: {{count_apis($project->id)}}</small>
                         <div class="builder">
                             <a draggable="false"
                                href="{{ route('project.api', ['project_id' => base64_encode($project->id)]) }}"
