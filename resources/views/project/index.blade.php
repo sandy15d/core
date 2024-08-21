@@ -104,8 +104,8 @@
                                     class="fa-solid fa-sliders"></i></a>
                     </div>
                     <div class="ak-project-info">
-                        <span> {{ \Carbon\Carbon::parse($project->updated_at)->format('d M Y') }}</span>
                         <h5>{{$project->project_name}}</h5>
+                        <span> Total APIs: </span>
                         <div class="builder">
                             <a draggable="false"
                                href="{{ route('project.api', ['project_id' => base64_encode($project->id)]) }}"
