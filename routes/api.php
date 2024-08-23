@@ -50,3 +50,6 @@ Route::get('/states', [\App\Http\Controllers\API\StateController::class, 'states
 Route::get('/districts', [\App\Http\Controllers\API\DistrictController::class, 'districts'])->name('districts');
 Route::get('/block_by_district', [\App\Http\Controllers\API\BlockController::class, 'blockByDistrict'])->name('block_by_district');
 Route::get('/city_village_by_state', [\App\Http\Controllers\API\CityVillageController::class, 'cityVillageByState'])->name('city_village_by_state');
+Route::get('/functions', [\App\Http\Controllers\API\OrgFunctionController::class, 'functions'])->name('functions');
+Route::get('/verticals', [\App\Http\Controllers\API\VerticalController::class, 'verticals'])->name('verticals');
+Route::get('/departments', [\App\Http\Controllers\API\DepartmentController::class, 'departments'])->name('departments');

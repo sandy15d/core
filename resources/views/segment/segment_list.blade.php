@@ -50,7 +50,7 @@
                             <thead>
                             <tr data-sort-method='thead'>
                                 <th class="table-id" data-sort-method="number">ID</th>
-                                   <th>Segment</th>   <th>Segment ID</th>   <th>Created on</th>   <th>Active/Inactive</th>
+                                   <th>Crop</th>   <th>Segment Name</th>   <th>Segment Code</th>   <th>Effective Date</th>   <th>Is Active</th>
                                 <th class="no-sort manage-th" data-orderable="false">
                                     <div class="manage-links">
 
@@ -62,10 +62,11 @@
                                 @foreach($segment_list as $data)
                                    <tr>
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{ $data->segment }}</td>
-<td>{{ $data->segment_id }}</td>
-<td>{{ $data->created_on }}</td>
-<td>{{ $data->active/inactive }}</td>
+                                        <td>{{ $data->crop->crop_name ?? "" }}</td>
+                                        <td>{{ $data->segment_name }}</td>
+                                        <td>{{ $data->segment_code }}</td>
+                                        <td>{{ $data->effective_date }}</td>
+                                        <td>{{ $data->is_active }}</td>
 
                                          <td class="manage-td">
                                             <div class="manage-links">

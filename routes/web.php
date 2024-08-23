@@ -97,7 +97,7 @@ Route::resource('pack_size', \App\Http\Controllers\PackSize\PackSizeController::
 
 Route::resource('employment_type', \App\Http\Controllers\EmploymentType\EmploymentTypeController::class);
 
-Route::resource('segment', \App\Http\Controllers\Segment\SegmentController::class);
+
 Route::resource('function_vertical_mappings', \App\Http\Controllers\Mapping\FunctionVerticalMappingController::class);
 Route::post('function_vertical_mappings_data', [\App\Http\Controllers\Mapping\FunctionVerticalMappingController::class, 'function_vertical_mappings_data'])->name('function_vertical_mappings_data');
 Route::get('function_vertical_mappings_list', [\App\Http\Controllers\Mapping\FunctionVerticalMappingController::class, 'function_vertical_mappings_list'])->name('function_vertical_mappings_list');
@@ -117,3 +117,6 @@ Route::get('vertical_dept_subdept_mappings_list', [\App\Http\Controllers\Mapping
 Route::resource('department_subdepartment_mappings', \App\Http\Controllers\Mapping\DepartmentSubdepartmentMappingController::class);
 Route::post('department_subdepartment_mappings_data', [\App\Http\Controllers\Mapping\DepartmentSubdepartmentMappingController::class, 'department_subdepartment_mappings_data'])->name('department_subdepartment_mappings_data');
 Route::get('department_subdepartment_mappings_list', [\App\Http\Controllers\Mapping\DepartmentSubdepartmentMappingController::class, 'department_subdepartment_mappings_list'])->name('department_subdepartment_mappings_list');
+
+
+Route::resource('segment', \App\Http\Controllers\Segment\SegmentController::class);

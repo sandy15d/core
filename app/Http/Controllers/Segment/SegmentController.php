@@ -19,11 +19,21 @@ class SegmentController extends Controller
     public function create()
     {
         $data = new Segment();
-        return view('segment.segment_form', compact('data'));
+        $crop_list = DB::table('crop')->get();
+        return view('segment.segment_form', compact('data', 'crop_list'));
     }
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'crop_id' => 'required',
+            'segment_name' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
       Segment::create($request->all()); 
      return redirect()->route('segment.index')->with('toast_success', 'Segment Created Successfully!');
     }
@@ -36,11 +46,21 @@ class SegmentController extends Controller
     public function edit($id)
     {
         $data = Segment::findOrFail($id);
-        return view('segment.segment_form', compact('data'));
+        $crop_list = DB::table('crop')->get();
+        return view('segment.segment_form', compact('data', 'crop_list'));
     }
 
     public function update(Request $request, Segment $segment)
     {
+        $validator = Validator::make($request->all(), [
+            'crop_id' => 'required',
+            'segment_name' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         $segment->update($request->all());
      return redirect()->route('segment.index')->with('toast_success', 'Segment Updated Successfully!');
     }

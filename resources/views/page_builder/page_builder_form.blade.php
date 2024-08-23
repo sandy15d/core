@@ -178,7 +178,7 @@
                     @endforeach
                 @endif
             </div>
-            @includeIf('layouts.form_footer', ['cancel_route' => ''])
+           
         </form>
     </div>
     <div class="offcanvas offcanvas-end text-bg-dark " tabindex="-1" id="ToolBar" aria-labelledby="ToolBarLabel"

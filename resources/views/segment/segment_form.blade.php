@@ -39,72 +39,88 @@
             </div>
             @includeIf("layouts.errors")
             <div class="form-content">
-                    <div class="row-50">
+                    <div class="row-33">
         <div class="input-container">
             <div class="input-label">
-                <label for="segment">Segment </label>
+                <label for="crop_id">Crop <span class="required">*</span></label>
             </div>
             <div class="input-data">
-                <input type="text" class="form-input " id="segment" autocomplete="off"
-                    name="segment" placeholder="Segment"
-                    value="{{ old('segment', $data->segment ?? '') }}"   />
-                <div class="error-message @if ($errors->has('segment')) show @endif">
+                <select name="crop_id" id="crop_id" class="form-select js-ak-select2">
+                    <option value="">Select Crop</option><br>@foreach ($crop_list as $list)
+                                        <option value="{{$list->id}}" {{ $data->crop_id == $list->id ? "selected" : "" }}>{{ $list->crop_name }}</option>
+                                     @endforeach
+                </select>
+                <div class="error-message @if ($errors->has('crop_id')) show @endif">
                     Required!</div>
-                <div class="text-muted" id="segment_help">
+               <div class="text-muted" id="crop_id_help"></div>
+            </div>
+        </div>
+    </div>    <div class="row-33">
+        <div class="input-container">
+            <div class="input-label">
+                <label for="segment_name">Segment Name <span class="required">*</span></label>
+            </div>
+            <div class="input-data">
+                <input type="text" class="form-input " id="segment_name" autocomplete="off"
+                    name="segment_name" placeholder="Segment Name"
+                    value="{{ old('segment_name', $data->segment_name ?? '') }}"   />
+                <div class="error-message @if ($errors->has('segment_name')) show @endif">
+                    Required!</div>
+                <div class="text-muted" id="segment_name_help">
                     
                 </div>
             </div>
         </div>
-    </div>    <div class="row-50">
+    </div>    <div class="row-33">
         <div class="input-container">
             <div class="input-label">
-                <label for="segment_id">Segment ID </label>
+                <label for="segment_code">Segment Code </label>
             </div>
             <div class="input-data">
-                <input type="number" class="form-input " id="segment_id" autocomplete="off"
-                    name="segment_id" placeholder="Segment ID"
-                    value="{{ old('segment_id', $data->segment_id ?? '') }}"   />
-                <div class="error-message @if ($errors->has('segment_id')) show @endif">
+                <input type="text" class="form-input " id="segment_code" autocomplete="off"
+                    name="segment_code" placeholder="Segment Code"
+                    value="{{ old('segment_code', $data->segment_code ?? '') }}"   />
+                <div class="error-message @if ($errors->has('segment_code')) show @endif">
                     Required!</div>
-                <div class="text-muted" id="segment_id_help">
+                <div class="text-muted" id="segment_code_help">
                     
                 </div>
             </div>
         </div>
-    </div>    <div class="row-50">
+    </div>    <div class="row-25">
         <div class="input-container">
             <div class="input-label">
-                <label for="created_on">Created on </label>
+                <label for="effective_date">Effective Date </label>
             </div>
             <div class="input-data">
-                 <div class="group-input date-time-group" id="ak_date_group_created_on">
-                    <input type="text" name="created_on"
-                           autocomplete="off" id="created_on"
+                 <div class="group-input date-time-group" id="ak_date_group_effective_date">
+                    <input type="text" name="effective_date"
+                           autocomplete="off" id="effective_date"
                            class="form-input js-ak-date-picker"
-                           placeholder="Created on" value="{{ old('created_on', isset($data->created_on)?$data->getRawOriginal('created_on') : '') }}">
+                           placeholder="Effective Date" value="{{ old('effective_date', isset($data->effective_date)?$data->getRawOriginal('effective_date') : '') }}">
                     <div class="input-suffix js-ak-calendar-icon"
-                         data-target="#created_on">
+                         data-target="#effective_date">
                         @includeIf("layouts.icons.calendar_icon")
                     </div>
-                    <div class="error-message @if ($errors->has('created_on')) show @endif">
+                    <div class="error-message @if ($errors->has('effective_date')) show @endif">
                         Required!</div>
                 </div>
-                <div class="text-muted" id="created_on_help"></div>
+                <div class="text-muted" id="effective_date_help"></div>
             </div>
         </div>
-    </div>    <div class="row-50">
+    </div>    <div class="row-25">
         <div class="input-container">
             <div class="input-label">
-                <label for="active/inactive">Active/Inactive </label>
+                <label for="is_active">is_active </label>
             </div>
             <div class="input-data">
-             <div class="checkbox-input ">
-                        <input type="hidden" name="active/inactive" value="0">
-                        <input class="form-checkbox" type="checkbox" id="active/inactive" name="active/inactive" value="1"
-                               @if(old("active/inactive") || ((isset($data->active/inactive)&&$data->active/inactive==1))) checked @endif >
-                        <label class="form-check-label" for="active/inactive"></label>
+             <div class="checkbox-input  form-switch">
+                        <input type="hidden" name="is_active" value="0">
+                        <input class="form-checkbox" type="checkbox" id="is_active" name="is_active" value="1"
+                               @if(old("is_active") || ((isset($data->is_active)&&$data->is_active==1))) checked @endif >
+                        <label class="form-check-label" for="is_active"></label>
              </div>
-              <div class="text-muted" id="active/inactive_help"></div>
+              <div class="text-muted" id="is_active_help"></div>
              </div>
         </div>
     </div>

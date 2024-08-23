@@ -15,11 +15,15 @@ class Segment extends Model
     protected $table = 'segment';
 
     
-    protected $fillable = ['segment', 'segment_id', 'created_on', 'active/inactive'];
+    protected $fillable = ['crop_id', 'segment_name', 'is_active', 'segment_code', 'effective_date'];
 
     protected $dates = ['created_at','updated_at','deleted_at'];
     
-    
+    public function crop() {
+    return $this->belongsTo("App\Models\Crop\Crop", "crop_id");
+}
+
+
     public function scopeStartSorting($query, $request): void
     {
         if ($request->has('segment_sort_by') && $request->segment_sort_by) {

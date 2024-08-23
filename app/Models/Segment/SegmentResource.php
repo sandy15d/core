@@ -31,10 +31,11 @@ class SegmentResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'segment' => $this->segment, 
- 			'segment_id' => $this->segment_id, 
- 			'created_on' => $this->created_on, 
- 			'active/inactive' => $this->active/inactive, 
+            'crop_id' => $this->crop_id, 
+ 			'segment_name' => $this->segment_name, 
+ 			'is_active' => $this->is_active, 
+ 			'segment_code' => $this->segment_code, 
+ 			'effective_date' => $this->effective_date, 
  			
         ];
     }
