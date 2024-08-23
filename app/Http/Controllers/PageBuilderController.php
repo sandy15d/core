@@ -315,8 +315,7 @@ class PageBuilderController extends Controller
             $this->generateController($page_id, $studly_case, $table_name);
             $this->generateListPage($page_id, $page_name, $table_name, $fillable_property);
             $this->generateFormPage($page_id, $page_name, $table_name);
-            $this->generateResource($studly_case, $fillable_property);
-          //  $this->generateAPIRoute($studly_case);
+
             $permissions = [
                 "add-{$studly_case}",
                 "edit-{$studly_case}",
@@ -1029,62 +1028,6 @@ class PageBuilderController extends Controller
         File::put($controllerPath, $controllerContent);
     }
 
-    private function generateResource($model_name, $fillable_property)
-    {
-        $stubPath = base_path('stubs/resource.stub');
-        if (!File::exists($stubPath)) {
-            throw new \Exception("Resource stub not found.");
-        }
-        $stubContent = File::get($stubPath);
-        $resourceDirectory = app_path("Models/{$model_name}");
-        $viewPath = "{$resourceDirectory}/{$model_name}Resource.php";
-
-        $columns = $fillable_property;
-        $print_columns = null;
-        foreach ($columns as $key => $column) {
-            $print_columns .= "'" . $column . "'" . ' => $this->' . $column . ', ' . "\n \t\t\t";
-        }
-        // Replace placeholders in the stub content
-        $stubContent = str_replace(
-            ['{{modelName}}', '{{columns}}'],
-            [$model_name, $print_columns],
-            $stubContent
-        );
-
-
-        // Create directory if not exists
-        if (!File::exists($resourceDirectory)) {
-            File::makeDirectory($resourceDirectory, 0755, true);
-        }
-
-        // Save the generated view content to the file
-        File::put($viewPath, $stubContent);
-    }
-
-    public function generateAPIRoute($modelName)
-    {
-
-
-        $nameSpace = "\nuse App\Http\Controllers\Api\{{modelName}}Controller;";
-        $template = "Route::apiResource('{{modelNameLower}}', {{modelName}}Controller::class);\n";
-        $nameSpace = str_replace('{{modelName}}', $modelName, $nameSpace);
-
-        $route = str_replace('{{modelNameLower}}', Str::camel(Str::plural($modelName)), $template);
-        $route = str_replace('{{modelName}}', $modelName, $route);
-        if (!strpos(file_get_contents(base_path('routes/api.php')), $route)) {
-            file_put_contents(base_path('routes/api.php'), $route, FILE_APPEND);
-
-            if (!strpos(file_get_contents(base_path('routes/api.php')), $nameSpace)) {
-                $lines = file(base_path('routes/api.php'));
-                $lines[0] = $lines[0] . "\n" . $nameSpace;
-                file_put_contents(base_path('routes/api.php'), $lines);
-            }
-
-
-        }
-
-
-    }
 
     public function updateSortingOrder(Request $request)
     {
