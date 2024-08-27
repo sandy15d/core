@@ -21,7 +21,7 @@ class CompanyAddressController extends Controller
         $data = new CompanyAddress();
         $company_list = DB::table('company')->get();
         $country_list = DB::table('country')->get();
-       
+
         return view('company_address.company_address_form', compact('data', 'company_list', 'country_list'));
     }
 
@@ -42,8 +42,8 @@ class CompanyAddressController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-      CompanyAddress::create($request->all()); 
-     return redirect()->route('company_address.index')->with('toast_success', 'CompanyAddress Created Successfully!');
+        CompanyAddress::create($request->all());
+        return redirect()->route('company_address.index')->with('toast_success', 'CompanyAddress Created Successfully!');
     }
 
     public function show($id)
@@ -56,7 +56,7 @@ class CompanyAddressController extends Controller
         $data = CompanyAddress::findOrFail($id);
         $company_list = DB::table('company')->get();
         $country_list = DB::table('country')->get();
-       
+
         return view('company_address.company_address_form', compact('data', 'company_list', 'country_list'));
     }
 
@@ -78,12 +78,19 @@ class CompanyAddressController extends Controller
         }
 
         $company_address->update($request->all());
-     return redirect()->route('company_address.index')->with('toast_success', 'CompanyAddress Updated Successfully!');
+        return redirect()->route('company_address.index')->with('toast_success', 'CompanyAddress Updated Successfully!');
     }
 
     public function destroy(CompanyAddress $company_address)
     {
         $company_address->delete();
         return redirect()->route('company_address.index')->with('toast_success', 'CompanyAddress Deleted Successfully!');
+    }
+
+    function get_company_address_by_company(Request $request)
+    {
+        $company_id = $request->company_id;
+        $company_address_type = CompanyAddress::where('company_id', $company_id)->pluck('id', 'address_type');
+        return response()->json(['company_address_type' => $company_address_type, 'status' => 200]);
     }
 }

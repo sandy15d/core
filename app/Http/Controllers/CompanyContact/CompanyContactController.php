@@ -20,8 +20,7 @@ class CompanyContactController extends Controller
     {
         $data = new CompanyContact();
         $company_list = DB::table('company')->get();
-        $company_address_list = DB::table('company_address')->get();
-        return view('company_contact.company_contact_form', compact('data', 'company_list', 'company_address_list'));
+        return view('company_contact.company_contact_form', compact('data', 'company_list'));
     }
 
     public function store(Request $request)
@@ -39,7 +38,7 @@ class CompanyContactController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-      CompanyContact::create($request->all()); 
+      CompanyContact::create($request->all());
      return redirect()->route('company_contact.index')->with('toast_success', 'CompanyContact Created Successfully!');
     }
 
@@ -52,8 +51,7 @@ class CompanyContactController extends Controller
     {
         $data = CompanyContact::findOrFail($id);
         $company_list = DB::table('company')->get();
-        $company_address_list = DB::table('company_address')->get();
-        return view('company_contact.company_contact_form', compact('data', 'company_list', 'company_address_list'));
+        return view('company_contact.company_contact_form', compact('data', 'company_list'));
     }
 
     public function update(Request $request, CompanyContact $company_contact)

@@ -127,7 +127,6 @@ Route::resource('segment', \App\Http\Controllers\Segment\SegmentController::clas
 Route::resource('company', \App\Http\Controllers\Company\CompanyController::class);
 
 Route::resource('company_address', \App\Http\Controllers\CompanyAddress\CompanyAddressController::class);
-
-
+Route::get('get_company_address_by_company',[\App\Http\Controllers\CompanyAddress\CompanyAddressController::class,'get_company_address_by_company'])->name('get_company_address_by_company');
 
 Route::resource('company_contact', \App\Http\Controllers\CompanyContact\CompanyContactController::class);

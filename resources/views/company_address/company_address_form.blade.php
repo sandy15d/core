@@ -189,7 +189,7 @@
                         dropdown.empty(); // Clear previous options
 
                         const listKey = Object.keys(response)[0];
-                        dropdown.append($('<option>', { value: '', text: 'Select ' + dropdownSelector.slice(1) }));
+                        dropdown.append($('<option>', { value: '', text: 'Select '}));
 
                         $.each(response[listKey], function (key, value) {
                             dropdown.append($('<option>', {
