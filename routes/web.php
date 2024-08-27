@@ -113,10 +113,6 @@ Route::get('region_territory_mappings_list', [\App\Http\Controllers\Mapping\Regi
 Route::resource('fun_vertical_dept_mappings', \App\Http\Controllers\Mapping\FunVerticalDeptMappingController::class);
 Route::post('fun_vertical_dept_mappings_data', [\App\Http\Controllers\Mapping\FunVerticalDeptMappingController::class, 'fun_vertical_dept_mappings_data'])->name('fun_vertical_dept_mappings_data');
 Route::get('fun_vertical_dept_mappings_list', [\App\Http\Controllers\Mapping\FunVerticalDeptMappingController::class, 'fun_vertical_dept_mappings_list'])->name('fun_vertical_dept_mappings_list');
-Route::resource('vertical_dept_sub_dept_mappings', \App\Http\Controllers\Mapping\VerticalDeptSubDeptMappingController::class);
-Route::post('vertical_dept_sub_dept_mappings_data', [\App\Http\Controllers\Mapping\VerticalDeptSubDeptMappingController::class, 'vertical_dept_sub_dept_mappings_data'])->name('vertical_dept_sub_dept_mappings_data');
-Route::get('vertical_dept_sub_dept_mappings_list', [\App\Http\Controllers\Mapping\VerticalDeptSubDeptMappingController::class, 'vertical_dept_sub_dept_mappings_list'])->name('vertical_dept_sub_dept_mappings_list');
-Route::get('vertical_dept_subdept_mappings_list', [\App\Http\Controllers\Mapping\VerticalDeptSubdeptMappingController::class, 'vertical_dept_subdept_mappings_list'])->name('vertical_dept_subdept_mappings_list');
 Route::resource('department_subdepartment_mappings', \App\Http\Controllers\Mapping\DepartmentSubdepartmentMappingController::class);
 Route::post('department_subdepartment_mappings_data', [\App\Http\Controllers\Mapping\DepartmentSubdepartmentMappingController::class, 'department_subdepartment_mappings_data'])->name('department_subdepartment_mappings_data');
 Route::get('department_subdepartment_mappings_list', [\App\Http\Controllers\Mapping\DepartmentSubdepartmentMappingController::class, 'department_subdepartment_mappings_list'])->name('department_subdepartment_mappings_list');
