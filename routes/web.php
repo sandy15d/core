@@ -128,3 +128,6 @@ Route::resource('company', \App\Http\Controllers\Company\CompanyController::clas
 
 Route::resource('company_address', \App\Http\Controllers\CompanyAddress\CompanyAddressController::class);
 
+
+
+Route::resource('company_contact', \App\Http\Controllers\CompanyContact\CompanyContactController::class);
