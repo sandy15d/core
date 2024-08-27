@@ -120,3 +120,7 @@ Route::get('department_subdepartment_mappings_list', [\App\Http\Controllers\Mapp
 
 
 Route::resource('segment', \App\Http\Controllers\Segment\SegmentController::class);
+
+Route::resource('company', \App\Http\Controllers\Company\CompanyController::class);
+
+Route::resource('company_address', \App\Http\Controllers\CompanyAddress\CompanyAddressController::class);
