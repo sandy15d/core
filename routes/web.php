@@ -46,6 +46,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('user', \App\Http\Controllers\UserController::class);
     Route::get('user/{user_id}/permission', [\App\Http\Controllers\UserController::class, 'give_permission'])->name('give_permission');
     Route::post('user/{user_id}/permission', [\App\Http\Controllers\UserController::class, 'set_user_permission'])->name('set_user_permission');
+
+    //=============================Import Excel========================
+    Route::get('/import', [\App\Http\Controllers\ExcelImportController::class, 'showImportForm'])->name('import.form');
+    Route::post('/import/upload', [\App\Http\Controllers\ExcelImportController::class, 'handleImport'])->name('import.upload');
+    Route::get('/api/get-columns', [\App\Http\Controllers\ExcelImportController::class, 'getTableColumns'])->name('import.columns');
+
 });
 
 
@@ -54,10 +60,10 @@ Route::resource('global_region', \App\Http\Controllers\GlobalRegion\GlobalRegion
 Route::resource('country', \App\Http\Controllers\Country\CountryController::class);
 
 Route::resource('state', \App\Http\Controllers\State\StateController::class);
-Route::get('get_states_by_country',[\App\Http\Controllers\API\StateController::class,'get_states_by_country'])->name('get_states_by_country');
+Route::get('get_states_by_country', [\App\Http\Controllers\API\StateController::class, 'get_states_by_country'])->name('get_states_by_country');
 
 Route::resource('district', \App\Http\Controllers\District\DistrictController::class);
-Route::get('get_district_by_state',[\App\Http\Controllers\API\DistrictController::class,'get_district_by_state'])->name('get_district_by_state');
+Route::get('get_district_by_state', [\App\Http\Controllers\API\DistrictController::class, 'get_district_by_state'])->name('get_district_by_state');
 
 Route::resource('block', \App\Http\Controllers\Block\BlockController::class);
 
@@ -78,7 +84,7 @@ Route::resource('variety', \App\Http\Controllers\Variety\VarietyController::clas
 Route::resource('category', \App\Http\Controllers\Category\CategoryController::class);
 
 Route::resource('city_village', \App\Http\Controllers\CityVillage\CityVillageController::class);
-Route::get('get_city_by_district',[\App\Http\Controllers\API\CityVillageController::class,'get_city_by_district'])->name('get_city_by_district');
+Route::get('get_city_by_district', [\App\Http\Controllers\API\CityVillageController::class, 'get_city_by_district'])->name('get_city_by_district');
 
 Route::resource('designation', \App\Http\Controllers\Designation\DesignationController::class);
 
@@ -123,6 +129,6 @@ Route::resource('segment', \App\Http\Controllers\Segment\SegmentController::clas
 Route::resource('company', \App\Http\Controllers\Company\CompanyController::class);
 
 Route::resource('company_address', \App\Http\Controllers\CompanyAddress\CompanyAddressController::class);
-Route::get('get_company_address_by_company',[\App\Http\Controllers\CompanyAddress\CompanyAddressController::class,'get_company_address_by_company'])->name('get_company_address_by_company');
+Route::get('get_company_address_by_company', [\App\Http\Controllers\CompanyAddress\CompanyAddressController::class, 'get_company_address_by_company'])->name('get_company_address_by_company');
 
 Route::resource('company_contact', \App\Http\Controllers\CompanyContact\CompanyContactController::class);

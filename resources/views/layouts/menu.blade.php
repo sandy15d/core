@@ -62,6 +62,14 @@
                             </a>
                         </div>
                     @endcan
+                    @can('import-excel')
+                        <div class="item {{ request()->routeIs('import.*') ? 'active' : '' }}">
+                            <a draggable="false" class="link" href="{{ route('import.form') }}">
+                                @includeIf("layouts.icons.page_icon")
+                                <div class="title">Import Data</div>
+                            </a>
+                        </div>
+                    @endcan
                 </div>
             </div>
 
