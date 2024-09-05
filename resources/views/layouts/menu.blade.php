@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div
-                class="dropdown-container {{ request()->routeIs('page-builder.*') || request()->routeIs('mapping-builder.*') || request()->routeIs('menu-builder.*') || request()->routeIs('project.*') || request()->routeIs('api-builder.*')? 'show' : '' }}">
+                class="dropdown-container {{ request()->routeIs('page-builder.*') || request()->routeIs('mapping-builder.*') || request()->routeIs('menu-builder.*') || request()->routeIs('project.*') || request()->routeIs('api-builder.*') || request()->routeIs('import.*')? 'show' : '' }}">
                 <div class="dropdown-menu-list">
                     @can('page-builder')
                         <div class="item {{ request()->routeIs('page-builder.*') ? 'active' : '' }}">
