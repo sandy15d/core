@@ -178,7 +178,7 @@
                     @endforeach
                 @endif
             </div>
-           
+
         </form>
     </div>
     <div class="offcanvas offcanvas-end text-bg-dark " tabindex="-1" id="ToolBar" aria-labelledby="ToolBarLabel"
@@ -705,6 +705,7 @@
                         if (elementDetails.input_type === 'select' || elementDetails.input_type === 'select2') {
                             $("#sourceDiv").removeClass('d-none');
                             $("#keyDiv").removeClass('d-none');
+                            $("#source_table").val(elementDetails.source_table);
                             getSourceTableColumn(elementDetails.source_table);
                             $("#source_table_key").val(elementDetails.source_table_column_key);
                             $("#source_table_value").val(elementDetails.source_table_column_value);
